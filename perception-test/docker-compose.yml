@@ -1,0 +1,180 @@
+#pull the car
+#behave properly
+version: '2'
+
+services:
+    # odsupercomponent:
+    #     image: ${IMAGE}
+    #     network_mode: host
+    #     volumes:
+    #     - .:/opt/opendlv.data
+    #     command: "/opt/od4/bin/odsupercomponent --cid=${CID} --verbose=0 --configuration=/opt/opendlv.data/configuration"
+
+    # # recorder
+    # odrecorderh264:
+    #    image: ${IMAGE}
+    #    depends_on:
+    #        - odsupercomponent
+    #        - proxy-camera
+    #        - proxy-velodyne16
+    #    volumes:
+    #        - ./recordings:/opt/recordings
+    #    privileged: true
+    #    user: root
+    #    network_mode: host
+    #    ipc: host
+    #    working_dir: "/opt/recordings"
+    #    command: "/opt/od4/bin/odrecorderh264 --cid=${CID}"
+
+    # recorder 
+    recorder219:
+       image: chrberger/cluon-amd64:latest
+       restart: on-failure
+       network_mode: "host"
+       volumes: 
+       # - ./recordings219cluon:/opt/recordings
+       - /media/usb-test/cfsd-test/recordings219cluon:/opt/recordings
+       working_dir: "/opt/recordings"
+       command: sh -c "cluon-OD4toStdout --cid=219 > `date +CID-219-recording-%Y-%m-%d_%H%M%S.rec`"  
+
+    recorder48:
+       image: chrberger/cluon-amd64:latest
+       restart: on-failure
+       network_mode: "host"
+       volumes:
+       #- ./recordings48cluon:/opt/recordings
+       - /media/usb-test/cfsd-test/recordings48cluon:/opt/recordings
+       working_dir: "/opt/recordings"
+       command: sh -c "cluon-OD4toStdout --cid=48 > `date +CID-48-recording-%Y-%m-%d_%H%M%S.rec`"
+
+    #configure camera on the computer first
+    proxy-camera:
+       image: proxy-camera:local
+       network_mode: host
+       group_add:
+           - video
+       ipc: host
+       devices:
+           - "/dev/video0:/dev/video0"
+       environment:
+           - DISPLAY=$DISPLAY
+       #    - CLUON_SHAREDMEMORY_POSIX=1
+       volumes:
+           - /tmp/.X11-unix:/tmp/.X11-unix
+           - "/dev/shm:/dev/shm"
+       ulimits:
+         memlock:
+           soft: 5600000 #1516032
+           hard: 5600000
+       command: "opendlv-device-camera-opencv --name=cam0 --bgr2rgb --cid=${CID} --camera=/dev/video0 --width=2560 --height=720 --bpp=24 --freq=30"
+
+    cfsd18-perception-detectcone:
+        image: "chalmersfsd/cfsd18-perception-detectcone:pre-release-fae8993"
+        network_mode: "host"
+        ipc: host
+        working_dir: /opt
+        environment:
+          - DISPLAY=$DISPLAY
+        volumes:
+         - /tmp/.X11-unix:/tmp/.X11-unix
+         - /media/usb-test/cfsd-test/detectcone:/opt
+         - "/dev/shm:/dev/shm"
+         - ./model:/opt/model
+        depends_on:
+         - proxy-camera
+        ulimits:
+          memlock:
+            soft: 5600000 #1516032
+            hard: 5600000
+        command: "cfsd18-perception-detectcone --cid=${CID} --name=cam0 --width=2560 --height=720 --bpp=24 --threshold=0.6
+        --timeDiffMilliseconds=40 --separationTimeMs=20 --checkLidarMilliseconds=1000 --senderStamp=118 --attentionSenderStamp=116
+        --offline=0 --annotate=0 --stateMachineId=1401 --readyStateMachine=0 --forwardDetection=0 --fastThreshold=20 --orbPatchSize=31
+        --matchDistance=1.5"    
+
+    proxy-velodyne16:
+        image: chalmersrevere/opendlv-device-lidar-vlp16-multi:v0.0.7
+        network_mode: "host"
+        volumes:
+            - .:/opt/opendlv.data
+        working_dir: "/opt/opendlv.data"
+        command: "opendlv-device-lidar-vlp16 --vlp16_ip=0.0.0.0 --vlp16_port=2368 --cid=${CID}"
+
+    #proxy-ellipse2n
+    #image need to be built locally
+    #image imu:latest is using libcluon v0.0.101
+    opendlv-proxy-ellipse2n:
+        image: proxy-imu:local
+        network_mode: "host"
+        devices:
+            - "/dev/ttyUSB0:/dev/ttyUSB0"
+        command: "opendlv-proxy-ellipse2n --cid=${CID} --id=112 --idRawData=108"
+    
+    cfsd18-sensation-attention:
+        image: chalmersfsd/cfsd18-sensation-attention:pre-release-911d2ac
+        network_mode: "host"
+        ipc: host
+        command: "cfsd18-sensation-attention --cid=${CID} --verbose --id=116 --xBoundary=4 --yBoundary=10 --groundLayerZ=-0.3 --coneHeight=0.5 --connectDistanceThreshold=0.3 --layerRangeThreshold=0.06 --minNumOfPointsForCone=5 --maxNumOfPointsForCone=300 --farConeRadiusThreshold=0.2 --nearConeRadiusThreshold=0.25 --zRangeThreshold=0.08 --inlierRangeThreshold=0.06 --dotThreshold=0.1 --inlierFoundThreshold=150 --numberOfIterations=10 --stateMachineId=1401"
+
+#    opendlv-logic-cfsd18-sensation-slam:
+#        image: chalmersfsd/opendlv-logic-cfsd18-sensation-slam:pre-release-97687ec
+#        network_mode: "host"
+#        depends_on:
+#            - proxy-camera
+#            - proxy-velodyne16
+#            - opendlv-proxy-ellipse2n
+#        ipc: host
+#        command: "opendlv-logic-cfsd18-sensation-slam --cid=${CID} --id=120 --detectConeId=116 --estimationId=112 --gatheringTimeMs=20 --sameConeThreshold=1.5 --refLatitude=57.714051 --refLongitude=11.948666 --timeBetweenKeyframes=150 --coneMappingThreshold=7 --conesPerPacket=20 --localization=0 --stateMachineId=1401"
+
+
+    cfsd18-perception-ukf:
+        image: ukf:local
+        network_mode: "host"
+        command: "opendlv-logic-cfsd18-sensation-ukf --cid=${CID} --cidDan=219 --id=114 --rackId=1206 --estimationId=112 --estimationIdRaw=108 --stateMachineId=1401 --wheelEncoderIdLeft=1504 --wheelEncoderIdRight=1505 --refLatitude=57.710482 --refLongitude=11.950813 --Qx=0.5 --Qy=0.5 --QvelX=0.5 --QvelY=0.5 --Qyaw=0.1 --Qheading=1 --Rx=1 --Ry=1 --RvelX=0.2 --RaccX=0.00059 --RaccY=0.00062 --Ryaw=0.03 --Rheading=0.3 --m=188 --Iz=105 --g=9.82 --l=1.53 --lf=0.765 --lr=0.765 --mu=0.9"
+
+    cfsd18-cognition-detectconelane:
+        image: chalmersfsd/cfsd18-cognition-detectconelane:pre-release-3ba1d9a
+        network_mode: "host"
+        command: "/usr/bin/cfsd18-cognition-detectconelane --cid=${CID} --verbose=0 --id=211 --detectconeStamp=118 --slamStamp=120 --simDetectconeStamp=231 \
+        --gatheringTimeMs=50 --separationTimeMs=10 \
+        --alwaysSlam=${FAKESLAM} --guessDistance=3.5 --maxConeAngle=1.570796325 \
+        --maxConeWidthSeparation=3.0 --widthSeparationMargin=1.0 \
+        --maxConeLengthSeparation=5.0 --lengthSeparationMargin=1.0 \
+        --nLapsToGo=2 --lapCounterLockTime=10"
+
+    # microservice for ...
+    cfsd18-cognition-track:
+        #image: chalmersfsd/cfsd18-cognition-track:pre-release-addd73c
+        #groundspeed set 1, --previewTime=2
+        image: track:nospeedreading
+        network_mode: "host"
+        volumes:
+        - .:/opt/opendlv.data
+        command: "/usr/bin/cfsd18-cognition-track --cid=${CID} --verbose=0 --id=221 --surfaceId=211 --speedId=232 \
+        --gatheringTimeMs=50 --separationTimeMs=10 \
+        --distanceBetweenPoints=0.5 --useTraceBack=0 --useMoveOrigin=1 --previewTime=2 \
+        --useSharp=0 --nSharpPreviewPoints=10 --sharpK1=0.17 --sharpKy=0.5 --sharpBigC=0.17 --sharpSmallC=1 \
+        --startAimVel=1 --accFreq=1 --axSpeedProfile=5 --useAyReading=0 --velocityLimit=20 --mu=${MU} --axLimitPositive=5 --axLimitNegative=-5 --headingErrorDependency=0.0f --curveDetectionAngle=1.0f --curveDetectionPoints=20 \
+        --usePolyFit=0 --curvEstStepsize=5 --polynomialDegree=3 --pointsPerPolySegment=10 --segmentizePolyfit=0 \
+        --wheelAngleLimit=25 --wheelBase=${WB} --frontToCog=${FTC} \
+        --aKp=1 --aKd=0 --aKi=0 --bKp=2 --bKd=0 --bKi=0.2 --sKp=0.4 --sKd=0 --sKi=0.1 --keepConstVel=-1 --diffToBrakeVel=0.3 --critDiff=0.5 --critDiff2=0.1"
+
+      
+ #   cfsd18-sim-visualization:
+ #       image: chalmersfsd/cfsd18-sim-visualization:pre-release-778bfb6
+ #       network_mode: "host"
+ #       command: "--cid=${CID}"
+ 
+    steering:
+        image: chalmersfsd/logic-action-steering:pre-release-06475ac
+        network_mode: "host"
+        command: "steering --cid=${CID} --cidSteering=219 --id=1 --verbose=1 --Kp=1.3"
+        
+    motion:
+        image: chalmersfsd/logic-action-motion:pre-release-6432d58
+        network_mode: "host"
+        command: "motion --cid=${CID} --cidSM=219 --constantSpeed=1 --speedRequest=2 --id=1 --verbose=1"
+
+#    brakes:
+#        image: chalmersfsd/logic-action-brakes:pre-release-6a1431c
+#        network_mode: "host"
+#        command: "brakes --cid=${CID} --cidBraking=219 --id=1 --verbose=1"

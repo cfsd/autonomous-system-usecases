@@ -1,0 +1,106 @@
+# docker-compose.yml - Composition of micro-services to run OpenDLV software.
+# Copyright (C) 2016 Christian Berger
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+# Date: 2016-10-16
+
+version: '2'
+
+services:
+    
+    odsupercomponent:
+        image: ${IMAGE}
+        network_mode: host
+        volumes:
+        - .:/opt/opendlv.data
+        command: "/opt/od4/bin/odsupercomponent --cid=${CID} --verbose=1 --configuration=/opt/opendlv.data/configuration"
+
+    
+    proxy-velodyne16:
+        image: chalmersrevere/opendlv-device-lidar-vlp16-multi:v0.0.7
+        network_mode: "host"
+        volumes:
+            - .:/opt/opendlv.data
+        ipc: host
+        # user: odv
+        working_dir: "/opt/opendlv.data"
+        command: "opendlv-device-lidar-vlp16 --vlp16_ip=0.0.0.0 --vlp16_port=2368 --cid=${CID}"
+
+    proxy-ellipse2n:
+        image: "proxy-imu:v0.0.101"
+        network_mode: "host"
+        ipc: host
+        devices:
+            - "/dev/ttyUSB0:/dev/ttyUSB0"
+        volumes:
+            - /etc/passwd:/etc/passwd
+            - /etc/groups:/etc/groups
+        command: "opendlv-proxy-ellipse2n --cid=${CID} --id=112"
+
+    proxy-camera:
+        image: proxy-camera:local
+        network_mode: host
+        group_add:
+            - video
+        ipc: host
+        devices:
+            - "/dev/video0:/dev/video0"
+        environment:
+            - DISPLAY=$DISPLAY
+         #   - CLUON_SHAREDMEMORY_POSIX=1
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix
+            - "/dev/shm:/dev/shm"
+        ulimits:
+          memlock:
+            soft: 12128256
+            hard: 12128256
+        command: "opendlv-device-camera-opencv --name=camera0 --bgr2rgb --cid=${CID} --camera=/dev/video0 --width=1344 --height=376 --bpp=24 --freq=30"
+
+    cfsd18-perception-imagerecorder:
+        image: "chalmersfsd/cfsd18-perception-imagerecorder:pre-release-939279c"
+        depends_on:
+           - proxy-camera
+        network_mode: "host"
+        ipc: host
+        volumes:
+        - ./images:/opt/images
+        - ./timestamp:/opt/timestamp/
+        environment:
+           - CLUON_SHAREDMEMORY_POSIX=1
+        command: "cfsd18-perception-imagerecorder --cid=${CID} --name=camera0 --width=1344 --height=376 --bpp=24 --verbose --id=1"
+
+    # recorder
+    odrecorderh264:
+       image: ${IMAGE}
+       depends_on:
+           - odsupercomponent
+           - proxy-camera
+           - proxy-velodyne16
+        #   - proxy-ellipse2n
+       volumes:
+           - ./recordings:/opt/recordings
+       user: odv
+       network_mode: host
+       ipc: host
+       working_dir: "/opt/recordings"
+       command: "/opt/od4/bin/odrecorderh264 --cid=${CID}"
+       
+    cfsd18-sim-visualization:
+        image: chalmersfsd/cfsd18-sim-visualization:pre-release-778bfb6
+        network_mode: "host"
+        command: "--cid=${CID}"
+

@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+    steering:
+        image: steering:nosteering
+        network_mode: "host"
+        command: "steering --cid=${CID} --cidSteering=219 --id=1 --verbose=1"
+
+    motion:
+        image: chalmersfsd/logic-action-motion:pre-release-675a8d2
+        network_mode: "host"
+        command: "motion --cid=${CID} --cidSM=219 --id=1 --verbose=1"
+        
+    cfsd18-sim-visualization:
+        image: chalmersfsd/cfsd18-sim-visualization:pre-release-778bfb6
+        network_mode: "host"
+        #command: "--cid=${CID}"
+        command: "--cid=219"

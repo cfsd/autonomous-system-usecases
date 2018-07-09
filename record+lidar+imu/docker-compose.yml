@@ -1,0 +1,48 @@
+version: '2'
+
+services:
+#    odsupercomponent:
+#        image: ${IMAGE}
+#        network_mode: host
+#        volumes:
+#        - .:/opt/opendlv.data
+#        command: "/opt/od4/bin/odsupercomponent --cid=${CID} --verbose=1 --configuration=/opt/opendlv.data/configuration"
+   
+    cfsd18-sensation-attention:
+        image: "chalmersfsd/cfsd18-sensation-attention:pre-release-911d2ac"
+        network_mode: "host"
+        ipc: host
+        command: "cfsd18-sensation-attention --cid=${CID} --verbose=1 --id=116 --xBoundary=4 --yBoundary=12 --groundLayerZ=-0.3 --coneHeight=0.5 --connectDistanceThreshold=0.4 --layerRangeThreshold=0.06 --minNumOfPointsForCone=2 --maxNumOfPointsForCone=80 --farConeRadiusThreshold=0.2 --nearConeRadiusThreshold=0.25 --zRangeThreshold=0.08 --inlierRangeThreshold=0.06 --dotThreshold=0.1 --inlierFoundThreshold=150 --numberOfIterations=10 --stateMachineId=1401"
+   
+    odrecorderh264:
+        image: ${IMAGE}
+        network_mode: host
+        volumes:
+        - ./recordings:/opt/Recordings
+        working_dir: "/opt/Recordings"
+        privileged: true
+        ipc: host
+        user: root
+        depends_on:
+#            - odsupercomponent
+            - proxy-velodyne16
+            - proxy-ellipse2n
+        command: "/opt/od4/bin/odrecorderh264 --cid=${CID}"
+
+    proxy-ellipse2n:
+        image: "proxy-imu:latest"
+        network_mode: "host"
+        ipc: host
+        devices:
+            - "/dev/ttyUSB0:/dev/ttyUSB0"
+        command: "opendlv-proxy-ellipse2n --cid=${CID} --id=112 --idRawData=108"
+
+
+    proxy-velodyne16:
+        image: chalmersrevere/opendlv-device-lidar-vlp16-multi:v0.0.7
+        network_mode: "host"
+        volumes:
+            - .:/opt/opendlv.data
+        working_dir: "/opt/opendlv.data"
+        command: "opendlv-device-lidar-vlp16 --vlp16_ip=0.0.0.0 --vlp16_port=2368 --cid=${CID}"
+

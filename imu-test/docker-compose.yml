@@ -1,0 +1,45 @@
+version: '2'
+
+services:
+    #proxy-ellipse2n
+    #image need to be built locally
+    #image imu:latest is using libcluon v0.0.101
+    opendlv-proxy-ellipse2n:
+        image: proxy-imu:local
+        network_mode: "host"
+        devices:
+            - "/dev/ttyUSB0:/dev/ttyUSB0"
+        command: "opendlv-proxy-ellipse2n --cid=${CID} --id=112 --idRawData=108"
+
+    proxy-velodyne16:
+        image: chalmersrevere/opendlv-device-lidar-vlp16-multi:v0.0.7
+        network_mode: "host"
+        volumes:
+            - .:/opt/opendlv.data
+        working_dir: "/opt/opendlv.data"
+        command: "opendlv-device-lidar-vlp16 --vlp16_ip=0.0.0.0 --vlp16_port=2368 --cid=${CID}"
+
+    cfsd18-perception-ukf:
+       image: ukf:local
+       network_mode: "host"
+       command: "opendlv-logic-cfsd18-sensation-ukf --cid=${CID} --cidDan=${CIDDAN} --id=114 --rackId=1206 --estimationId=112 --estimationIdRaw=108 --stateMachineId=1401 --wheelEncoderIdLeft=1504 --wheelEncoderIdRight=1505 --refLatitude=57.710482 --refLongitude=11.950813 --Qx=0.5 --Qy=0.5 --QvelX=0.5 --QvelY=0.5 --Qyaw=0.1 --Qheading=1 --Rx=1 --Ry=1 --RvelX=0.2 --RaccX=0.00059 --RaccY=0.00062 --Ryaw=0.03 --Rheading=0.3 --m=188 --Iz=105 --g=9.82 --l=1.53 --lf=0.765 --lr=0.765 --mu=0.9"
+
+    # recorder
+    recorder219:
+       image: chrberger/cluon-amd64:latest
+       restart: on-failure
+       network_mode: "host"
+       volumes:
+       - ./recordings219cluon:/opt/recordings
+       working_dir: "/opt/recordings"
+       command: sh -c "cluon-OD4toStdout --cid=219 > `date +CID-219-recording-%Y-%m-%d_%H%M%S.rec`"
+
+    recorder48:
+       image: chrberger/cluon-amd64:latest
+       restart: on-failure
+       network_mode: "host"
+       volumes:
+       - ./recordings48cluon:/opt/recordings
+       working_dir: "/opt/recordings"
+       command: sh -c "cluon-OD4toStdout --cid=48 > `date +CID-48-recording-%Y-%m-%d_%H%M%S.rec`"
+

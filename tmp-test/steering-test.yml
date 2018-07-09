@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+    technicalInspection:
+        image: steering:local
+        network_mode: "host"
+        command: "techInspec --cid=48"
+
+    steering:
+        image: chalmersfsd/logic-action-steering:pre-release-d743e56
+        network_mode: "host"
+        command: "steering --cid=48 --cidSteering=219"

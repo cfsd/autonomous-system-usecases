@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+
+    motion:
+        image: chalmersfsd/logic-action-motion:pre-release-6432d58
+        network_mode: "host"
+        command: "motion --cid=${CID} --cidSM=219 --constantSpeed=1 --speedRequest=4 --id=1 --verbose=1"
+
+    odsupercomponent:
+        image: ${IMAGE}
+        network_mode: host
+        volumes:
+        - .:/opt/opendlv.data
+        command: "/opt/od4/bin/odsupercomponent --cid=${CID} --verbose=0 --configuration=/opt/opendlv.data/configuration"
+
+    # recorder
+    odrecorderh264:
+       image: ${IMAGE}
+       depends_on:
+           - odsupercomponent
+       volumes:
+           - ./recordings:/opt/recordings
+       privileged: true
+       user: root
+       network_mode: host
+       ipc: host
+       working_dir: "/opt/recordings"
+       command: "/opt/od4/bin/odrecorderh264 --cid=${CID}"
+
