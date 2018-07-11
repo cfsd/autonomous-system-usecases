@@ -131,9 +131,9 @@ services:
 
 
     cfsd18-perception-ukf:
-        image: ukf:local
+        image: chalmersfsd/cfsd18-perception-ukf:pre-release-4a36710
         network_mode: "host"
-        command: "opendlv-logic-cfsd18-sensation-ukf --cid=${CID} --cidDan=219 --id=114 --rackId=1206 --estimationId=112 --estimationIdRaw=108 --stateMachineId=1401 --wheelEncoderIdLeft=1504 --wheelEncoderIdRight=1505 --refLatitude=57.710482 --refLongitude=11.950813 --Qx=0.5 --Qy=0.5 --QvelX=0.5 --QvelY=0.5 --Qyaw=0.1 --Qheading=1 --Rx=1 --Ry=1 --RvelX=0.2 --RaccX=0.00059 --RaccY=0.00062 --Ryaw=0.03 --Rheading=0.3 --m=188 --Iz=105 --g=9.82 --l=1.53 --lf=0.765 --lr=0.765 --mu=0.9"
+        command: "opendlv-logic-cfsd18-sensation-ukf --cid=${CID} --cidDan=219 --id=114 --rackId=1206 --estimationId=112 --estimationIdRaw=108 --stateMachineId=1401 --wheelEncoderIdLeft=1504 --wheelEncoderIdRight=1505 --refLatitude=57.710487 --refLongitude=11.950660 --Qx=1 --Qy=1 --QvelX=0.5 --QvelY=0.2 --Qyaw=0.2 --Qheading=1 --Rx=0.2 --Ry=0.2 --RvelX=0.3 --RaccX=0.00059 --RaccY=0.01 --Ryaw=0.03 --Rheading=0.05 --m=210 --Iz=105 --g=9.82 --l=1.53 --lf=0.765 --lr=0.765 --mu=0.9"
 
     cfsd18-cognition-detectconelane:
         image: chalmersfsd/cfsd18-cognition-detectconelane:pre-release-0f63938
