@@ -73,7 +73,7 @@ services:
        command: "nice -n -10 opendlv-device-camera-opencv --name=cam0 --bgr2rgb --cid=${CID} --camera=/dev/video0 --width=2560 --height=720 --bpp=24 --freq=15"
 
     cfsd18-perception-detectcone:
-        image: "chalmersfsd/cfsd18-perception-detectcone:pre-release-fae8993"
+        image: "chalmersfsd/cfsd18-perception-detectcone:pre-release-c0c3341"
         network_mode: "host"
         ipc: host
         working_dir: /opt
