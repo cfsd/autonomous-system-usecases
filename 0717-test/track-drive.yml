@@ -92,24 +92,27 @@ services:
             - "/dev/ttyUSB0:/dev/ttyUSB0"
         command: "opendlv-proxy-ellipse2n --cid=${CID} --id=112 --idRawData=108"
     
-    cfsd18-sensation-attention:
-        image: chalmersfsd/cfsd18-sensation-attention:pre-release-faac13f
+  cfsd18-sensation-attention:
+        image: chalmersfsd/cfsd18-sensation-attention:pre-release-69baa73
         network_mode: "host"
         ipc: host
-        command: "cfsd18-sensation-attention --cid=${CID} --verbose --id=116 --xBoundary=4 --yBoundary=12 --groundLayerZ=-0.3 --coneHeight=0.5 \
-        --connectDistanceThreshold=0.3 --layerRangeThreshold=0.06 --minNumOfPointsForCone=10 --maxNumOfPointsForCone=300 --farConeRadiusThreshold=0.17 \
-        --nearConeRadiusThreshold=0.13 --zRangeThreshold=0.0 --inlierRangeThreshold=0.06 --dotThreshold=0.1 --inlierFoundThreshold=150 \
-        --numberOfIterations=10 --stateMachineId=1401"
+        command: "cfsd18-sensation-attention --cid=${CID} --verbose --id=116 --xBoundary=4 --yBoundary=12 --zUpperBoundary=0.6
+        --groundClusterDistanceThreshold=0.3 --groundClusterSizeThreshold=60 --connectDistanceThreshold=0.15 --minNumOfPointsForCone=3
+        --maxNumOfPointsForCone=300 --coneRadiusThreshold=0.15 --zRangeThreshold=0.0 --inlierRangeThreshold=0.06 --dotThreshold=0.1
+        --inlierFoundThreshold=500 --numberOfIterations=30 --stateMachineId=1401 --readyStateMachine=0"
+
 
 #    opendlv-logic-cfsd18-sensation-slam:
-#        image: chalmersfsd/opendlv-logic-cfsd18-sensation-slam:pre-release-97687ec
+#        image: chalmersfsd/opendlv-logic-cfsd18-sensation-slam:pre-release-689f21b
 #        network_mode: "host"
 #        depends_on:
 #            - proxy-camera
 #            - proxy-velodyne16
 #            - opendlv-proxy-ellipse2n
 #        ipc: host
-#        command: "opendlv-logic-cfsd18-sensation-slam --cid=${CID} --id=120 --detectConeId=116 --estimationId=112 --gatheringTimeMs=20 --sameConeThreshold=1.5 --refLatitude=57.719264 --refLongitude=11.957777 --timeBetweenKeyframes=150 --coneMappingThreshold=7 --conesPerPacket=20 --localization=0 --stateMachineId=1401"
+#        command: "opendlv-logic-cfsd18-sensation-slam --cid=${CID} --id=120 --detectConeId=116 --estimationId=114
+#             --gatheringTimeMs=20 --sameConeThreshold=1.5 --refLatitude=57.719264 --refLongitude=11.957777
+#             --timeBetweenKeyframes=150 --coneMappingThreshold=4 --conesPerPacket=20 --lapSize=20 --localization=0 --stateMachineId=1401"
 
 
     cfsd18-perception-ukf:
