@@ -51,7 +51,10 @@ services:
        command: "nice -n -10 opendlv-device-camera-opencv --name=cam0 --bgr2rgb --cid=${CID} --camera=/dev/video0 --width=2560 --height=720 --bpp=24 --freq=15"
 
     cfsd18-perception-detectcone:
-        image: chalmersfsd/cfsd18-perception-detectcone:master-f7f4e1c
+        #0714-test
+        #image: chalmersfsd/cfsd18-perception-detectcone:master-f7f4e1c
+        #latest
+        image: chalmersfsd/cfsd18-perception-detectcone:pre-release-385d025
         network_mode: "host"
         ipc: host
         working_dir: /opt
@@ -84,7 +87,6 @@ services:
 
     #proxy-ellipse2n
     #image need to be built locally
-    #image imu:latest is using libcluon v0.0.101
     opendlv-proxy-ellipse2n:
         image: proxy-imu:local
         network_mode: "host"
@@ -93,7 +95,10 @@ services:
         command: "opendlv-proxy-ellipse2n --cid=${CID} --id=112 --idRawData=108"
     
   cfsd18-sensation-attention:
+        #latest
         image: chalmersfsd/cfsd18-sensation-attention:pre-release-69baa73
+        #0714-test
+        #image: chalmersfsd/cfsd18-sensation-attention:pre-release-faac13f
         network_mode: "host"
         ipc: host
         command: "cfsd18-sensation-attention --cid=${CID} --verbose --id=116 --xBoundary=4 --yBoundary=12 --zUpperBoundary=0.6
@@ -103,6 +108,7 @@ services:
 
 
 #    opendlv-logic-cfsd18-sensation-slam:
+#        #latest  
 #        image: chalmersfsd/opendlv-logic-cfsd18-sensation-slam:pre-release-689f21b
 #        network_mode: "host"
 #        depends_on:
@@ -116,6 +122,7 @@ services:
 
 
      ukf:
+         #latest
          image: chalmersfsd/cfsd18-perception-ukf:pre-release-8f682c3
          network_mode: host
          ipc: host
@@ -126,7 +133,10 @@ services:
 
 
     cfsd18-cognition-detectconelane:
-        image: chalmersfsd/cfsd18-cognition-detectconelane:pre-release-3bbbc57
+        #latest
+        image: chalmersfsd/cfsd18-cognition-detectconelane:pre-release-57b4264
+        #0714-test
+        #image: chalmersfsd/cfsd18-cognition-detectconelane:pre-release-3bbbc57
         #image: detectconelane:nogeolocation
         network_mode: "host"
         command: "/usr/bin/cfsd18-cognition-detectconelane --cid=${CID} --verbose=0 --id=211 --detectconeStamp=118 --slamStamp=120 --simDetectconeStamp=231 \
@@ -138,24 +148,31 @@ services:
 
     # microservice for ...
     cfsd18-cognition-track:
-        image: chalmersfsd/cfsd18-cognition-track:pre-release-0594a26
+        # 0714-test
+        #image: chalmersfsd/cfsd18-cognition-track:pre-release-0594a26
+        # latest
+        image: chalmersfsd/cfsd18-cognition-track:pre-release-36e3398
         network_mode: "host"
         volumes:
         - .:/opt/opendlv.data
-        command: "/usr/bin/cfsd18-cognition-track --cid=${CID} --verbose=0 --id=221 --surfaceId=211 --speedId=232 \
+        command: "/usr/bin/cfsd18-cognition-track --cid=${CID} --verbose=0 --id=221 --surfaceId=211 --speedId=232 --slamId=120 \
         --gatheringTimeMs=50 --separationTimeMs=10 \
-        --distanceBetweenPoints=0.5 --useTraceBack=0 --useMoveOrigin=1 --useCurveFitPath=1 --previewTime=0.3 --minPrevDist=2.3 --steerRate=30 \
-        --useSharp=0 --nSharpPreviewPoints=10 --sharpK1=0.17 --sharpKy=0.5 --sharpBigC=0.17 --sharpSmallC=1 \
-        --startAimVel=1 --accFreq=1 --axSpeedProfile=5 --useAyReading=0 --velocityLimit=20 --mu=${MU} --axLimitPositive=5 --axLimitNegative=-5 --headingErrorDependency=0.0f --curveDetectionAngle=1.0f --curveDetectionPoints=20 \
-        --usePolyFit=0 --curvEstStepsize=5 --polynomialDegree=3 --pointsPerPolySegment=10 --segmentizePolyfit=0 \
         --wheelAngleLimit=25 --wheelBase=${WB} --frontToCog=${FTC} \
-        --aKp=1 --aKd=0 --aKi=0 --bKp=2 --bKd=0 --bKi=0.2 --sKp=0.4 --sKd=0 --sKi=0.1 --keepConstVel=-1 --diffToBrakeVel=0.3 --critDiff=0.5 --critDiff2=0.1"
- 
+        --distanceBetweenPoints=0.5 --useTraceBack=0 --curvEstStepsize=5 \
+        --useMoveOrigin=1 --useCurveFitPath=1 --polynomialDegree=3 --previewTime=0.3 --minPrevDist=2.5 --steerRate=30 --curveLimitedSteerRate=30 --ignoreOnePointPaths=0 --calcDtaOnX=0 \
+        --curveDetectionAngle=0.3f --curveExitAngleLim=0.1f \
+        --previewTimeSlam=0.3 --minPrevDistSlam=2.5 --steerRateSlam=30 \
+        --startAimVel=0.5 --accFreq=1 --axSpeedProfile=8 --useAyReading=0 --velocityLimit=10 --mu=${MU} --axLimitPositive=5 --axLimitNegative=-5 \
+        --headingErrorDependency=0.7f  --curveDetectionAngleSlam=1.0f --curveDetectionPoints=20 \
+        --aKp=1 --aKd=0 --aKi=0 --bKp=2 --bKd=0 --bKi=0.2 --sKp=1 --sKd=0 --sKi=0.5 --keepConstVel=3 --diffToBrakeVel=0 --critDiff=0.5 --critDiff2=0.1 \
+        --useSharp=0 --nSharpPreviewPoints=10 --sharpK1=0.17 --sharpKy=0.5 --sharpBigC=0.17 --sharpSmallC=1 \
+        --usePolyFit=0 --pointsPerPolySegment=10 --segmentizePolyfit=0"
+
     steering:
-        image: logic-action-steering:yaw-rate-steering-v0
+        image: chalmersfsd/logic-action-steering:pre-release-06475ac
         network_mode: "host"
         command: "steering --cid=${CID} --cidSteering=219 --id=1 --verbose=1 --Kp=1.3"
-        
+
     motion:
         image: chalmersfsd/logic-action-motion:pre-release-6432d58
         network_mode: "host"
