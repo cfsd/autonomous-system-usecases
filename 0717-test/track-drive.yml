@@ -1,5 +1,3 @@
-#pull the car
-#behave properly
 version: '2'
 
 services:
