@@ -99,8 +99,8 @@ services:
         #image: chalmersfsd/cfsd18-sensation-attention:pre-release-faac13f
         network_mode: "host"
         ipc: host
-        command: "cfsd18-sensation-attention --cid=${CID} --verbose --id=116 --xBoundary=4 --yBoundary=12 --zUpperBoundary=0.6
-        --groundClusterDistanceThreshold=0.3 --groundClusterSizeThreshold=60 --connectDistanceThreshold=0.15 --minNumOfPointsForCone=3
+        command: "cfsd18-sensation-attention --cid=${CID} --verbose --id=116 --xBoundary=3 --yBoundary=30 --zUpperBoundary=0.6
+        --groundClusterDistanceThreshold=0.3 --groundClusterSizeThreshold=60 --connectDistanceThreshold=0.15 --minNumOfPointsForCone=2
         --maxNumOfPointsForCone=300 --coneRadiusThreshold=0.15 --zRangeThreshold=0.0 --inlierRangeThreshold=0.06 --dotThreshold=0.1
         --inlierFoundThreshold=500 --numberOfIterations=30 --stateMachineId=1401 --readyStateMachine=0"
 
@@ -141,32 +141,22 @@ services:
         network_mode: "host"
         command: "/usr/bin/cfsd18-cognition-detectconelane --cid=${CID} --verbose=0 --id=211 --detectconeStamp=118 --slamStamp=120 --simDetectconeStamp=231 \
         --gatheringTimeMs=50 --separationTimeMs=10 \
-        --alwaysSlam=${FAKESLAM} --guessDistance=3.2 --minGuessSeparation=1.5 --maxConeAngle=1.570796325 \
+        --alwaysSlam=${FAKESLAM} --guessDistance=3.0 --minGuessSeparation=1.5 --maxConeAngle=3.05 \
         --maxConeWidthSeparation=3.0 --widthSeparationMargin=1.0 \
         --maxConeLengthSeparation=5.0 --lengthSeparationMargin=1.0 \
         --nLapsToGo=2 --lapCounterLockTime=10 --refLatitude=57.719264 --refLongitude=11.957777"
 
-    # microservice for ...
-    cfsd18-cognition-track:
-        # 0714-test
-        #image: chalmersfsd/cfsd18-cognition-track:pre-release-0594a26
-        # latest
-        image: chalmersfsd/cfsd18-cognition-track:pre-release-36e3398
+    cfsd18-cognition-acceleration:
+        image: chalmersfsd/cfsd18-cognition-acceleration:pre-release-50fe391
         network_mode: "host"
         volumes:
         - .:/opt/opendlv.data
-        command: "/usr/bin/cfsd18-cognition-track --cid=${CID} --verbose=0 --id=221 --surfaceId=211 --speedId=114 --slamId=120 \
+        command: "/usr/bin/cfsd18-cognition-acceleration --cid=${CID} --verbose=0 --id=221 --surfaceId=211 --speedId=114 --slamId=120 \
         --gatheringTimeMs=50 --separationTimeMs=10 \
         --wheelAngleLimit=25 --wheelBase=${WB} --frontToCog=${FTC} \
-        --distanceBetweenPoints=0.5 --useTraceBack=0 --curvEstStepsize=5 \
-        --useMoveOrigin=1 --useCurveFitPath=1 --polynomialDegree=3 --previewTime=1 --minPrevDist=2 --steerRate=30 --curveLimitedSteerRate=30 --ignoreOnePointPaths=1 --calcDtaOnX=0 \
-        --curveDetectionAngle=0.3f --curveExitAngleLim=0.1f \
-        --previewTimeSlam=1 --minPrevDistSlam=2 --steerRateSlam=30 \
-        --startAimVel=0.5 --accFreq=1 --axSpeedProfile=8 --useAyReading=0 --velocityLimit=10 --mu=${MU} --axLimitPositive=5 --axLimitNegative=-5 \
-        --headingErrorDependency=0.7f  --curveDetectionAngleSlam=1.0f --curveDetectionPoints=20 \
-        --aKp=1 --aKd=0 --aKi=0 --bKp=2 --bKd=0 --bKi=0.2 --sKp=1 --sKd=0 --sKi=0.5 --keepConstVel=3 --diffToBrakeVel=0 --critDiff=0.5 --critDiff2=0.1 \
-        --useSharp=0 --nSharpPreviewPoints=10 --sharpK1=0.17 --sharpKy=0.5 --sharpBigC=0.17 --sharpSmallC=1 \
-        --usePolyFit=0 --pointsPerPolySegment=10 --segmentizePolyfit=0"
+        --useMoveOrigin=1 --steerRate=30 \
+        --startAimVel=0.5 --useAyReading=0 --velocityLimit=30 --mu=${MU} --axLimitPositive=5 --axLimitNegative=-10 --headingErrorDependency=0.7f \
+        --aKp=1 --aKd=0 --aKi=0 --bKp=2 --bKd=0.1 --bKi=0.05 --sKp=0.5 --sKd=0 --sKi=0.5 "
 
     steering:
         image: chalmersfsd/logic-action-steering:pre-release-06475ac
