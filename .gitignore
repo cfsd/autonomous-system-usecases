@@ -10,4 +10,4 @@
 local/
 script/
 performance-test/
-
+*.tar.gz

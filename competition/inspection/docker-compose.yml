@@ -2,21 +2,21 @@ version: '2'
 
 services:
     technical-inspection:
-      image: chalmersfsd/logic-technical-inspection:pre-release-b2a6f51
+      image: chalmersfsd/logic-technical-inspection:pre-release-c2f8f73
       network_mode: "host"
       command: "techInspec --cid=${CIDMain} --cidBB=${cidBB}"
 
     steering:
-        image: chalmersfsd/logic-action-steering:pre-release-b0d1def
+        image: chalmersfsd/logic-action-steering:pre-release-06475ac
         network_mode: "host"
-        command: "steering --cid=${CIDMain} --cidSteering=${cidBB}"
+        command: "steering --cid=${CID} --cidSteering=219 --id=1 --verbose=1 --Kp=1"
 
     recorder48:
         image: chrberger/cluon-amd64:latest
         restart: on-failure
         network_mode: "host"
         volumes:
-        - ./Recordings:/opt/recordings
+        - ./recordings48cluon:/opt/recordings
         working_dir: "/opt/recordings"
         command: sh -c "cluon-OD4toStdout --cid=${CIDMain} > `date +CID-48-recording-%Y-%m-%d_%H%M%S.rec`"
 
@@ -25,6 +25,6 @@ services:
         restart: on-failure
         network_mode: "host"
         volumes:
-        - ./Recordings:/opt/recordings
+        - ./recordings219cluon:/opt/recordings
         working_dir: "/opt/recordings"
         command: sh -c "cluon-OD4toStdout --cid=${cidBB} > `date +CID-219-recording-%Y-%m-%d_%H%M%S.rec`"
