@@ -1,13 +1,8 @@
 version: '2'
 
 services:
-#    device-kiwi-prugw:
-#        image: openkorp/opendlv-device-kiwi-prugw-multi:latest
-#        network_mode: "host"
-#        command: "/usr/bin//opendlv-device-kiwi-prugw --cid=111 --names=steering,propulsion --types=servo,esc --channels=1,2 --offsets=0,0 --maxvals=0.4,1"
-
     device-ps3controller:
-        image: proxy-ps3-lynx-v0.0.1:f6ed1ec
+        image: proxy-ps3-lynx-v0.0.1:4458a28
         network_mode: "host"
         devices:
           - "/dev/input/js0:/dev/input/js0"
