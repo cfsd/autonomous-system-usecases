@@ -1,11 +1,9 @@
 version: '2'
 
 services:
-
     # recorder 
     recorder219:
        image: chrberger/cluon-amd64:latest
-       restart: on-failure
        network_mode: "host"
        volumes: 
        - ./recordings219cluon:/opt/recordings
@@ -15,7 +13,6 @@ services:
 
     recorder48:
        image: chrberger/cluon-amd64:latest
-       restart: on-failure
        network_mode: "host"
        volumes:
        - ./recordings48cluon:/opt/recordings
@@ -154,6 +151,7 @@ services:
 
     steering:
         image: chalmersfsd/logic-action-steering:pre-release-06475ac
+        #image: chalmersfsd/logic-action-steering:yaw-rate-steering-8ad8665
         network_mode: "host"
         command: "steering --cid=${CID} --cidSteering=219 --id=1 --verbose=1 --Kp=1"
 
