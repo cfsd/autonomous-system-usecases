@@ -2,7 +2,7 @@ version: '2'
 
 services:
     technical-inspection:
-      image: chalmersfsd/logic-technical-inspection:pre-release-57d4690
+      image: chalmersfsd/logic-technical-inspection:pre-release-331b822
       network_mode: "host"
       command: "techInspec --cid=${CID} --cidBB=${cidBB}"
 
