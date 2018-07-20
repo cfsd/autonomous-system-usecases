@@ -139,7 +139,7 @@ services:
         --gatheringTimeMs=50 --separationTimeMs=10 \
         --wheelAngleLimit=25 --wheelBase=${WB} --frontToCog=${FTC} \
         --distanceBetweenPoints=0.5 --useTraceBack=0 --curvEstStepsize=5 \
-        --useMoveOrigin=1 --useCurveFitPath=0 --polynomialDegree=3 --previewTime=1 --minPrevDist=2 --steerRate=30 --curveLimitedSteerRate=30 --ignoreOnePointPaths=1 --calcDtaOnX=0 \
+        --useMoveOrigin=1 --useCurveFitPath=0 --polynomialDegree=3 --previewTime=1 --minPrevDist=2 --steerRate=30 --curveSteerAmpLim=0 --prevReqRatio=0.7 --ignoreOnePointPaths=1 --calcDtaOnX=0 \
         --curveDetectionAngle=0.3f --curveExitAngleLim=0.1f \
         --previewTimeSlam=1 --minPrevDistSlam=2 --steerRateSlam=30 \
         --startAimVel=0.5 --accFreq=1 --axSpeedProfile=8 --useAyReading=0 --velocityLimit=10 --mu=${MU} --axLimitPositive=5 --axLimitNegative=-5 \
