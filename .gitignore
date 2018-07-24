@@ -12,3 +12,4 @@ script/
 performance-test/
 *.tar.gz
 *.local
+**/track
