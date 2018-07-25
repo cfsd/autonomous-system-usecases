@@ -47,7 +47,7 @@ services:
 
     cfsd18-perception-detectcone:
         #latest
-        image: chalmersfsd/cfsd18-perception-detectcone:pre-release-f6e591f  
+        image: chalmersfsd/cfsd18-perception-detectcone:pre-release-f116a46  
         #image: chalmersfsd/cfsd18-perception-detectcone:pre-release-4f13908
         network_mode: "host"
         ipc: host
@@ -132,7 +132,7 @@ services:
     cfsd18-cognition-detectconelane:
         image: chalmersfsd/cfsd18-cognition-detectconelane:pre-release-e5f1123
         network_mode: "host"
-        command: "/usr/bin/cfsd18-cognition-detectconelane --cid=${CID} --verbose=0 --id=211 --detectConeId=118 --slamId=120 --simDetectConeId=231 --attentionId=116 \
+        command: "/usr/bin/cfsd18-cognition-detectconelane --cid=${CID} --verbose=0 --id=211 --detectConeId=118 --estimationId=114 --slamId=120 --simDetectConeId=231 --attentionId=116 \
         --gatheringTimeMs=50 --separationTimeMs=10 \
         --alwaysSlam=${FAKESLAM} --guessDistance=3.2 --minGuessSeparation=1.5 --latePerpGuessing=0 --maxConeAngle=1.570796325 \
         --maxConeWidthSeparation=3.2 --widthSeparationMargin=1.0 \
@@ -142,7 +142,7 @@ services:
 
 
     cfsd18-cognition-track:
-        image: chalmersfsd/cfsd18-cognition-track:pre-release-d2b8770
+        image: chalmersfsd/cfsd18-cognition-track:pre-release-40a1944
         network_mode: "host"
         volumes:
         - ./track:/opt/opendlv.data
@@ -166,9 +166,9 @@ services:
         command: "steering --cid=${CID} --cidSteering=219 --id=1 --verbose=1 --Kp=1"
 
     motion:
-        image: chalmersfsd/logic-action-motion:pre-release-ab45495
+        image: chalmersfsd/logic-action-motion:pre-release-019df65
         network_mode: "host"
-        command: "motion --cid=${CID} --cidSM=219 --constantSpeed=1 --speedRequest=2 --id=1 --verbose=1"
+        command: "motion --cid=${CID} --cidSM=219 --constantSpeed=0 --id=1 --verbose=1"
 
 #    brakes:
 #        image: chalmersfsd/logic-action-brakes:pre-release-6a1431c
