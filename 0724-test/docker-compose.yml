@@ -135,7 +135,7 @@ services:
 
     # mv refLatitude and refLongitude to .env file
     cfsd18-cognition-detectconelane:
-        image: chalmersfsd/cfsd18-cognition-detectconelane:pre-release-e5f1123
+        image: chalmersfsd/cfsd18-cognition-detectconelane:pre-release-7ca61fd
         network_mode: "host"
         command: "/usr/bin/cfsd18-cognition-detectconelane --cid=${CID} --verbose=0 --id=211 --detectConeId=118 --estimationId=114 --slamId=120 --simDetectConeId=231 --attentionId=116 \
         --gatheringTimeMs=50 --separationTimeMs=10 \
