@@ -136,7 +136,7 @@ services:
 
 
     cfsd18-cognition-track:
-        image: chalmersfsd/cfsd18-cognition-track:pre-release-40a1944
+        image: chalmersfsd/cfsd18-cognition-track:pre-release-8158fe4
         network_mode: "host"
         volumes:
         - ./track:/opt/opendlv.data
