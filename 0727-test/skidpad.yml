@@ -47,7 +47,7 @@ services:
 
     cfsd18-perception-detectcone:
         #latest
-        image: chalmersfsd/cfsd18-perception-detectcone:pre-release-041220f
+        image: chalmersfsd/cfsd18-perception-detectcone:pre-release-f5b38b1
         network_mode: "host"
         ipc: host
         working_dir: /opt
