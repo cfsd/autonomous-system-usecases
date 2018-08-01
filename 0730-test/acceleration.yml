@@ -116,7 +116,7 @@ services:
         --staticTrustInLastPathPoint=1 --useDynamicTrust=0 --aimDistance=30.0"
 
     steering:
-        image: chalmersfsd/logic-action-steering:yaw-rate-steering-8ad8665
+        image: chalmersfsd/logic-action-steering:pre-release-49d79a6
         network_mode: "host"
         command: "steering --cid=${CID} --cidSteering=219 --id=1 --verbose=1 --Kp=1"
 
