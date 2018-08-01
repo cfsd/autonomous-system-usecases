@@ -102,7 +102,7 @@ services:
             - opendlv-proxy-ellipse2n
         ipc: host
         command: "opendlv-logic-cfsd18-sensation-slam --cid=${CID} --cidDan=219 --id=120 --detectConeCvId=118 --detectConeId=116 --estimationId=114
-        --gatheringTimeMs=20 --sameConeThreshold=1.5 --offsetDistanceThreshold=0.7 --offsetHeadingThreshold=0.4 --refLatitude=57.719264 --refLongitude=11.957777
+        --gatheringTimeMs=20 --sameConeThreshold=1.0 --offsetDistanceThreshold=0.7 --offsetHeadingThreshold=0.4 --refLatitude=57.719264 --refLongitude=11.957777
         --timeBetweenKeyframes=150 --coneMappingThreshold=4 --conesPerPacket=20 --lapSize=20 --stateMachineId=1401"
 
     ukf:
