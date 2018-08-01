@@ -94,8 +94,7 @@ services:
 
     opendlv-logic-cfsd18-sensation-slam:
         #latest
-        image: chalmersfsd/opendlv-logic-cfsd18-sensation-slam:pre-release-6f5c124
-        #image: chalmersfsd/opendlv-logic-cfsd18-sensation-slam:pre-release-181c400
+        image: chalmersfsd/opendlv-logic-cfsd18-sensation-slam:pre-release-6b141f5
         network_mode: "host"
         depends_on:
             - proxy-camera
