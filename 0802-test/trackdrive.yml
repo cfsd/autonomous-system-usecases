@@ -118,7 +118,7 @@ services:
     # mv refLatitude and refLongitude to .env file
     cfsd18-cognition-detectconelane:
         #latest
-        image: chalmersfsd/cfsd18-cognition-detectconelane:pre-release-d336e70
+        image: chalmersfsd/cfsd18-cognition-detectconelane:pre-release-713bb3d
         network_mode: "host"
         command: "/usr/bin/cfsd18-cognition-detectconelane --cid=${CID} --verbose=0 --id=211 --detectConeId=118 --slamId=120 --simDetectConeId=231 --attentionId=116 --yawRateId=112 --speedId=114 --gpsId=114 \
         --gatheringTimeMs=50 --separationTimeMs=10 \
@@ -127,8 +127,8 @@ services:
         --maxConeLengthSeparation=5.0 --lengthSeparationMargin=1.0 \
         --nLapsToGo=3 --lapCounterLockTime=20 \
         --useOrangeLapCounter=1 --useNewConeLapCounter=1 --nMinOrangeFrames=2 --nMinDisappearanceFrames=2 \
-        --useGpsLapCounter=1 --useRawGPS=0 --refLatitude=57.710482 --refLongitude=11.950813 \
-        --useAccelerationMode=0 --usePathMemory=0\
+        --useGpsLapCounter=1 --trackGpsTolerance=2.0 --useRawGPS=0 --refLatitude=57.710482 --refLongitude=11.950813 \
+        --useAccelerationMode=0 --usePathMemory=0 --accGpsFinishDistance=75.0 \
         --useSkidpadMode=0"
 
 
