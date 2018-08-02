@@ -127,7 +127,7 @@ services:
         --maxConeLengthSeparation=5.0 --lengthSeparationMargin=1.0 \
         --nLapsToGo=3 --lapCounterLockTime=20 --stopSignalDelay=0.0 \
         --useOrangeLapCounter=1 --useNewConeLapCounter=1 --nMinOrangeFrames=2 --nMinDisappearanceFrames=2 \
-        --useGpsLapCounter=3 --useRawGPS=0 --refLatitude=57.710482 --refLongitude=11.950813 \
+        --useGpsLapCounter=1 --useRawGPS=0 --refLatitude=57.710482 --refLongitude=11.950813 \
         --useAccelerationMode=0 --usePathMemory=0\
         --useSkidpadMode=0"
 
