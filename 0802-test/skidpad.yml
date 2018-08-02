@@ -141,7 +141,7 @@ services:
         - ./track:/opt/opendlv.data
         command: "/usr/bin/cfsd18-cognition-track --cid=${CID} --cidWheelSpeed=219 --verbose=0 --id=221 --surfaceId=211 --speedId1=1504 --speedId2=1505 --slamId=120 \
         --gatheringTimeMs=50 --separationTimeMs=10 \
-        --wheelAngleLimit=30 --wheelBase=${WB} --frontToCog=0.765 \
+        --wheelAngleLimit=30 --wheelBase=${WB} --frontToCog=0.65 \
         --distanceBetweenPoints=0.5 --curvEstStepsize=5 \
         --useMoveOrigin=1 --useOrderPath=0 --useCurveFitPath=0 --constPrevDist=2 --previewTime=1 --minPrevDist=2 --steerRate=50 --curveSteerAmpLim=0 --prevReqRatio=0.5 --ignoreOnePointPaths=1 --calcDtaOnX=0 \
         --previewTimeSlam=1 --minPrevDistSlam=2 --steerRateSlam=50 --curveDetectionPointsSlam=15 --curveDetectionAngleSlam=1.0f \
