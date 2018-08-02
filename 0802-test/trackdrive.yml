@@ -131,9 +131,6 @@ services:
         --useAccelerationMode=0 --usePathMemory=0\
         --useSkidpadMode=0"
 
-
-
-
     cfsd18-cognition-track:
         #image: chalmersfsd/cfsd18-cognition-track:pre-release-6d1492b
         image: chalmersfsd/cfsd18-cognition-track:pre-release-8959439
