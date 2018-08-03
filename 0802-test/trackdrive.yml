@@ -125,7 +125,7 @@ services:
         --alwaysSlam=0 --guessDistance=3.2 --minGuessSeparation=1.5 --latePerpGuessing=0 --useCurveDetection=0 --maxConeAngle=1.570796325 --behindMemoryDistance=3.0 \
         --maxConeWidthSeparation=3.2 --widthSeparationMargin=1.0 \
         --maxConeLengthSeparation=5.0 --lengthSeparationMargin=1.0 \
-        --nLapsToGo=3 --lapCounterLockTime=20 --stopSignalDelay=0.0 \
+        --nLapsToGo=10 --lapCounterLockTime=20 --stopSignalDelay=5.0 \
         --useOrangeLapCounter=1 --useNewConeLapCounter=1 --nMinOrangeFrames=2 --nMinDisappearanceFrames=2 \
         --useGpsLapCounter=1 --useRawGPS=0 --refLatitude=57.710482 --refLongitude=11.950813 \
         --useAccelerationMode=0 --usePathMemory=0 \
@@ -141,11 +141,11 @@ services:
         --gatheringTimeMs=50 --separationTimeMs=10 \
         --wheelAngleLimit=30 --wheelBase=${WB} --frontToCog=0.65 \
         --distanceBetweenPoints=0.5 --curvEstStepsize=5 \
-        --useMoveOrigin=1 --useOrderPath=1 --useCurveFitPath=0 --previewTime=1 --minPrevDist=2 --steerRate=50 --curveSteerAmpLim=0 --prevReqRatio=0 --ignoreOnePointPaths=1 --calcDtaOnX=0 \
-        --previewTimeSlam=0.5 --minPrevDistSlam=2 --steerRateSlam=50 --curveDetectionPointsSlam=15 --curveDetectionAngleSlam=1.0f \
-        --startAimVel=5 --accFreq=1 --ayLimit=3.74 --velocityLimit=6 --axLimitPositive=5 --axLimitNegative=-5 --headingErrorDependency=0.5f --alwaysHeadingErrorDependent=0 \
-	      --curveDetectionAngle=0.3f --curveExitAngleLim=0.1f --curveDetectionPoints=15 --maxPathLengthLocal=11  \
-        --aKp=1 --aKd=0 --aKi=0.1 --bKp=1 --bKd=0 --bKi=0.2 --keepConstVel=3 --localVel=3 --keepConstVelSlam=-1 --diffToBrakeVel=0 --critDiff=0.5 --critDiff2=1 \
+        --useMoveOrigin=1 --useOrderPath=1 --useCurveFitPath=0 --previewTime=1 --minPrevDist=2 --steerRate=50 --curveSteerAmpLim=0 --prevReqRatio=0.7 --ignoreOnePointPaths=1 --calcDtaOnX=0 \
+        --previewTimeSlam=1 --minPrevDistSlam=2 --steerRateSlam=50 --curveDetectionPointsSlam=15 --curveDetectionAngleSlam=1.0f \
+        --startAimVel=5 --accFreq=1 --ayLimit=3.0 --velocityLimit=6 --axLimitPositive=5 --axLimitNegative=-5 --headingErrorDependency=0.5f --alwaysHeadingErrorDependent=0 \
+        --curveDetectionAngle=0.3f --curveExitAngleLim=0.1f --curveDetectionPoints=15 --maxPathLengthLocal=11  \
+        --aKp=1 --aKd=0 --aKi=0.1 --bKp=1 --bKd=0 --bKi=0.2 --keepConstVel=3 --localVel=3 --keepConstVelSlam=3 --diffToBrakeVel=0 --critDiff=0.5 --critDiff2=1 \
         --useSharp=0 --nSharpPreviewPoints=10 --sharpK1=0.17 --sharpKy=0.5 --sharpBigC=0.17 --sharpSmallC=1 \
         --usePolyFit=0 --pointsPerPolySegment=40 --segmentizePolyfit=1 --polynomialDegree=2"
 
