@@ -96,7 +96,7 @@ services:
         --inlierFoundThreshold=500 --numberOfIterations=30 --stateMachineId=1401 --readyStateMachine=0"
 
     cfsd18-perception-skidpad:
-         image: chalmersfsd/cfsd18-perception-skidpad:pre-release-106e147
+         image: chalmersfsd/cfsd18-perception-skidpad:pre-release-49cdfb4
          #image: skidpad:test
          network_mode: "host"
          ipc: host
