@@ -141,7 +141,7 @@ services:
         --gatheringTimeMs=50 --separationTimeMs=10 \
         --wheelAngleLimit=30 --wheelBase=${WB} --frontToCog=0.65 \
         --distanceBetweenPoints=0.5 --curvEstStepsize=5 \
-        --useMoveOrigin=1 --useOrderPath=1 --useCurveFitPath=0 --previewTime=1 --minPrevDist=2 --steerRate=50 --curveSteerAmpLim=0 --prevReqRatio=0.7 --ignoreOnePointPaths=1 --calcDtaOnX=0 \
+        --useMoveOrigin=1 --useOrderPath=1 --useCurveFitPath=0 --previewTime=1 --minPrevDist=2 --steerRate=50 --curveSteerAmpLim=0 --prevReqRatio=0 --ignoreOnePointPaths=1 --calcDtaOnX=0 \
         --previewTimeSlam=1 --minPrevDistSlam=2 --steerRateSlam=50 --curveDetectionPointsSlam=15 --curveDetectionAngleSlam=1.0f \
         --startAimVel=5 --accFreq=1 --ayLimit=3.0 --velocityLimit=6 --axLimitPositive=5 --axLimitNegative=-5 --headingErrorDependency=0.5f --alwaysHeadingErrorDependent=0 \
         --curveDetectionAngle=0.3f --curveExitAngleLim=0.1f --curveDetectionPoints=15 --maxPathLengthLocal=11  \
