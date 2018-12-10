@@ -22,10 +22,11 @@ services:
        working_dir: "/opt/recordings"
        command: sh -c "cluon-OD4toStdout --cid=48 > `date +CID-48-recording-%Y-%m-%d_%H%M%S.rec`"
 
+    # This one has been changed to use a local image since
+    # there's currently a problem with building the image on archlinux
+    # Also the name should be changed...
     video-h264-encoder-amd64:
-        build:
-            context: https://github.com/chalmers-revere/opendlv-video-h264-encoder.git
-            dockerfile: Dockerfile.amd64
+        image: encoder_video-h264-encoder-amd64:latest
         restart: on-failure
         network_mode: "host"
         ipc: "host"
@@ -33,20 +34,6 @@ services:
         - /tmp:/tmp
         command: "--cid=48 --name=video0.i420 --width=1344 --height=376"
 
-    # currently, the PC on the car does not connect to a graphic card
-    # instead, run this microservice on another laptop within the same network
-    opendlv-vehicle-view:
-        image: chalmersrevere/opendlv-vehicle-view-multi:v0.0.44
-        restart: on-failure
-        network_mode: "host"
-        volumes:
-        -./recordings:/opt/vehicle-view/recordings
-        - /var/run/docker.sock:/var/run/docker.sock
-        ports:
-        - "8081:8081"
-
-    # TODO:test on the ZED camera
-    # - adjust the width, height and freq
     proxy-camera:
        image: chalmersrevere/opendlv-device-camera-v4l-multi:v0.0.6
        network_mode: host
