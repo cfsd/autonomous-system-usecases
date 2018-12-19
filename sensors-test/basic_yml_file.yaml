@@ -22,11 +22,16 @@ services:
        working_dir: "/opt/recordings"
        command: sh -c "cluon-OD4toStdout --cid=48 > `date +CID-48-recording-%Y-%m-%d_%H%M%S.rec`"
 
-    # This one has been changed to use a local image since
-    # there's currently a problem with building the image on archlinux
-    # Also the name should be changed...
+# This build might fail. In that case build the image locally, transfer it and change:
+# build:
+#       context: https://github.com/chalmers-revere/opendlv-video-h264-encoder.git
+#       dockerfile: Dockerfile.amd64
+# to:
+# image: <name>:<tag>
     video-h264-encoder-amd64:
-        image: encoder_video-h264-encoder-amd64:latest
+        build:
+            context: https://github.com/chalmers-revere/opendlv-video-h264-encoder.git
+            dockerfile: Dockerfile.amd64
         restart: on-failure
         network_mode: "host"
         ipc: "host"
@@ -63,7 +68,7 @@ services:
     #this used image is already on the PC
     #the source code is on the drive
     opendlv-proxy-ellipse2n:
-        image: proxy-imu:local
+        image: chalmersfsd/opendlv-device-gps-ekinox:v0.0.1
         network_mode: "host"
         devices:
             - "/dev/ttyUSB0:/dev/ttyUSB0"
