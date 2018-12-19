@@ -61,7 +61,7 @@ services:
         volumes:
             - .:/opt/opendlv.data
         working_dir: "/opt/opendlv.data"
-        command: "opendlv-device-lidar-vlp16 --vlp16_ip=0.0.0.0 --vlp16_port=2368 --cid=48 --gps"
+        command: "opendlv-device-lidar-vlp16 --vlp16_ip=0.0.0.0 --vlp16_port=2368 --cid=48 --gpstime"
 
     #proxy-ellipse2n
     #image need to be built locally
