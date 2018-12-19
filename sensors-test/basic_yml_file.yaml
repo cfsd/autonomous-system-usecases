@@ -40,7 +40,7 @@ services:
         command: "--cid=48 --name=video0.i420 --width=1344 --height=376"
 
     proxy-camera:
-       image: chalmersrevere/opendlv-device-camera-v4l-multi:v0.0.6
+       image: chalmersrevere/opendlv-device-camera-v4l-multi:v0.0.7
        network_mode: host
        group_add:
            - video
