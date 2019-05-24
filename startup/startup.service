@@ -1,0 +1,8 @@
+[Unit]
+Description=CFSD Start script
+
+[Service]
+ExecStart=/home/cfsd/boot/startup.sh
+
+[Install]
+WantedBy=multi-user.target 
