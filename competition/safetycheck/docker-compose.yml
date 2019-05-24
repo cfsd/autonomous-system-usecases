@@ -1,9 +1,0 @@
-version: '2'
-
-services:
-    device-ps3controller:
-        image: proxy-ps3-lynx-v0.0.1:4458a28
-        network_mode: "host"
-        devices:
-          - "/dev/input/js0:/dev/input/js0"
-        command: "/usr/bin/opendlv-device-ps3controller --cid=219 --cidpwm=219 --freq=50 --input=/dev/input/js0 --angleconversion=19 --verbose=1" 
