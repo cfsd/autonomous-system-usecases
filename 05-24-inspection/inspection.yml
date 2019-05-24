@@ -1,0 +1,31 @@
+# This is a basic .yml file for CFSD19
+# it includes ZED camera and ellipse2n interface, data recording microservices
+version: '2'
+
+services: 
+    cfsd-logic-lynx-steering:
+        image: chalmersfsd/cfsd19-logic-lynx-steering:test1
+        network_mode: "host"
+        restart: always
+        command: "steering --cid=${CID} --cidGpio=${CID} --cidpwm=${CID} --cidAnalog=${CID} --verbose=1 --id=1 --freq=15 --pconst=2300 --iconst=5.5 --tolerance=1"
+
+    cfsd-logic-aimpoint:
+        image: chalmersfsd/cfsd-logic-aimpoint:test-single-aimpoint2
+        network_mode: "host"
+        command: "cfsd-logic-aimpoint --cid=${CID} --previewTime=0.5 --lowPassFactor=0.95"
+
+    cfsd-cognition-velocity-planner:
+        image: chalmersfsd/cfsd-cognition-velocity-planner:test-first6
+        network_mode: "host"
+        command: "velocity --cid=${CID} --ayLimit=5.0 --velocityLimit=10.0 --decelerationLimit=5.0"
+
+    cfsd-logic-pathplanner:
+        image: chalmersfsd/cfsd-logic-pathplanner:test3
+        network_mode: "host"
+        command: "cfsd-logic-pathplanner --cid=${CID} --freq=1 --verbose"
+
+    cfsd-action-longitudinal-control:
+        image: chalmersfsd/cfsd-action-longitudinal-control:test-pControl5
+        network_mode: "host"
+        command: "motion --cid=${CID} --freq=2 --verbose"
+        
