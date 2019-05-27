@@ -10,14 +10,14 @@ services:
         command: "steering --cid=${CID} --cidGpio=${CID} --cidpwm=${CID} --cidAnalog=${CID} --verbose=1 --id=1 --freq=15 --pconst=2300 --iconst=5.5 --tolerance=1"
 
     cfsd-logic-aimpoint:
-        image: chalmersfsd/cfsd-logic-aimpoint:test-single-aimpoint2
+        image: chalmersfsd/cfsd-logic-aimpoint:test-single-aimpoint5
         network_mode: "host"
         command: "cfsd-logic-aimpoint --cid=${CID} --previewTime=0.5 --lowPassFactor=0.95"
 
     cfsd-cognition-velocity-planner:
-        image: chalmersfsd/cfsd-cognition-velocity-planner:test-first6
+        image: chalmersfsd/cfsd-cognition-velocity-planner:test-first7
         network_mode: "host"
-        command: "velocity --cid=${CID} --ayLimit=5.0 --velocityLimit=10.0 --decelerationLimit=5.0"
+        command: "velocity --cid=${CID} --ayLimit=5.0 --velocityLimit=10.0 --decelerationLimit=5.0 --verbose"
 
     cfsd-logic-pathplanner:
         image: chalmersfsd/cfsd-logic-pathplanner:test3
@@ -25,7 +25,7 @@ services:
         command: "cfsd-logic-pathplanner --cid=${CID} --freq=1 --verbose"
 
     cfsd-action-longitudinal-control:
-        image: chalmersfsd/cfsd-action-longitudinal-control:test-pControl5
+        image: chalmersfsd/cfsd-action-longitudinal-control:test-pControl6
         network_mode: "host"
         command: "motion --cid=${CID} --freq=2 --verbose"
         
