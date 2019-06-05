@@ -26,3 +26,8 @@ services:
         depends_on:
          - cangw-res
         command: "state-machine --cid=${CID} --cidAnalog=${CID} --cidGpio=${CID} --cidPwm=${CID} --freq=2.0f"
+    
+    cfsd-mission-control:
+        image: chalmersfsd/cfsd-logic-lynx-mission-control:test-inspection6
+        network_mode: "host"
+        command: " --cid=131 --frequency=60 --verbose"
