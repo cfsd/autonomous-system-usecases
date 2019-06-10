@@ -10,21 +10,21 @@ services:
 #--rackPos --steerPos --ebsLine --ebsAct --servTank --pressReg --asms --clamped --ebsOK
 
     #can-service
-    cangw-lynx:
-        image: chalmersfsd/cfsd-proxy-cangw-lynx:test11
-        network_mode: "host"
-        command: "cfsd-proxy-cangw-lynx --cid=${CID} --can=can0"
-
-    cangw-res:
-        image: chalmersfsd/cfsd-proxy-cangw-res:test-new-senderstamp11
-        network_mode: "host"
-        command: "opendlv-device-cangw-lynx --cid=${CID} --can=can1"
+#    cangw-lynx:
+#        image: chalmersfsd/cfsd-proxy-cangw-lynx:test11
+#        network_mode: "host"
+#        command: "cfsd-proxy-cangw-lynx --cid=${CID} --can=can0"
+#
+#    cangw-res:
+#        image: chalmersfsd/cfsd-proxy-cangw-res:test-new-senderstamp11
+#        network_mode: "host"
+#        command: "opendlv-device-cangw-lynx --cid=${CID} --can=can1"
 
     state-machine:
-        image: chalmersfsd/cfsd-logic-lynx-state-machine:test-extended-message-set10
+        image: chalmersfsd/cfsd-logic-lynx-state-machine:test-delay14
         network_mode: "host"
-        depends_on:
-         - cangw-res
+#        depends_on:
+#         - cangw-res
         command: "state-machine --cid=${CID} --cidAnalog=${CID} --cidGpio=${CID} --cidPwm=${CID} --freq=30.0f"
     
     cfsd-mission-control:
