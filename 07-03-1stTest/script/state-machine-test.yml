@@ -21,7 +21,7 @@ services:
         command: "opendlv-device-cangw-lynx --cid=${CID} --can=can1"
 
     state-machine:
-        image: chalmersfsd/cfsd-logic-lynx-state-machine:test-delay22
+        image: chalmersfsd/cfsd-logic-lynx-state-machine:test-extended-message-set31
         network_mode: "host"
         depends_on:
          - cangw-res
@@ -33,6 +33,6 @@ services:
         command: "steering --cid=${CID} --cidGpio=${CID} --cidpwm=${CID} --cidAnalog=${CID} --id=1 --freq=15 --pconst=2300 --iconst=5.5 --tolerance=1"
 
     cfsd-mission-control:
-        image: chalmersfsd/cfsd-logic-lynx-mission-control:test-inspection9
+        image: chalmersfsd/cfsd-logic-lynx-mission-control:test-brake14
         network_mode: "host"
         command: " --cid=${CID} --frequency=60 --verbose"

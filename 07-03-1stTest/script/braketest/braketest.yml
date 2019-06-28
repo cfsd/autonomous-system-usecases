@@ -3,10 +3,15 @@
 version: '2'
 
 services: 
+    cfsd-cognition-acceleration:
+        image: chalmersfsd/cfsd-action-longitudinal-control:test-piControl9
+        network_mode: "host"
+        command: "motion --cid=${CID} --freq=2"
+
     recorder:
-       image: chrberger/cluon-amd64:latest
-       network_mode: "host"
-       volumes:
-       - ./recordings${CID}cluon:/opt/recordings
-       working_dir: "/opt/recordings"
-       command: sh -c "cluon-OD4toStdout --cid=${CID} > `date +CID-${CID}-${missionname}-recording-%Y-%m-%d_%H%M%S.rec`"
+        image: chrberger/cluon-amd64:latest
+        network_mode: "host"
+        volumes:
+        - ./recordings${CID}cluon:/opt/recordings
+        working_dir: "/opt/recordings"
+        command: sh -c "cluon-OD4toStdout --cid=${CID} > `date +CID-${CID}-${missionname}-recording-%Y-%m-%d_%H%M%S.rec`"
