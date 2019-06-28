@@ -1,0 +1,58 @@
+# This is a basic .yml file for CFSD19
+# it includes ZED camera, ellipse2n interface, data recording microservices
+version: '2'
+
+services: 
+    # the image label "latest" here is not the lastest on the Dockerhub
+    # the image:lastest here is the one already downloaded on the PC
+    # can be forced to download the latest from the Dockerhub  
+    recorder-data-collection:
+       image: chrberger/cluon-amd64:latest
+       network_mode: "host"
+       volumes:
+       - ./camera-imu-data:/opt/recordings
+       working_dir: "/opt/recordings"
+       command: sh -c "cluon-OD4toStdout --cid=${cidData} > `date +recording-%Y-%m-%d_%H%M%S.rec`"
+
+# This build might fail. In that case build the image locally, transfer it and change:
+# build:
+#       context: https://github.com/chalmers-revere/opendlv-video-h264-encoder.git
+#       dockerfile: Dockerfile.amd64
+# to:
+# image: <name>:<tag>
+    video-h264-encoder-amd64:
+        #build:
+            #context: https://github.com/chalmers-revere/opendlv-video-h264-encoder.git
+            #dockerfile: Dockerfile.amd64
+        image: video-h264-encoder-amd64:latest
+        restart: on-failure
+        network_mode: "host"
+        ipc: "host"
+        depends_on: 
+        - proxy-camera
+        volumes:
+        - /tmp:/tmp
+        command: "--cid=${cidData} --name=video0.i420 --width=${width} --height=${height}"
+
+    proxy-camera:
+       image: chalmersrevere/opendlv-device-camera-v4l-multi:v0.0.8
+       network_mode: host
+       group_add:
+           - video
+       ipc: host
+       user: root
+       devices:
+           - "/dev/video0:/dev/video0"
+       environment:
+           - DISPLAY=$DISPLAY
+       volumes:
+           - /tmp/.X11-unix:/tmp/.X11-unix
+           - /tmp:/tmp
+       command: "--camera=/dev/video0 --width=${width} --height=${height} --freq=${freq}"
+
+    proxy-imu:
+        image: chalmersfsd/cfsd-proxy-imu:v1.0.0
+        network_mode: "host"
+        devices:
+            - "/dev/ttyUSB0:/dev/ttyUSB0"
+        command: "opendlv-proxy-ellipse2n --cid=${cidData} --id=112"
