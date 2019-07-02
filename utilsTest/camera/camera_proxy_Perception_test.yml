@@ -1,0 +1,57 @@
+# it includes ZED camera, data recording, perception microservices
+version: '2.3'
+
+services: 
+    video-h264-encoder-amd64:
+        #build:
+            #context: https://github.com/chalmers-revere/opendlv-video-h264-encoder.git
+            #dockerfile: Dockerfile.amd64
+        image: video-h264-encoder-amd64:latest
+        restart: on-failure
+        network_mode: "host"
+        ipc: "host"
+        volumes:
+        - /tmp:/tmp
+        command: "--cid=48 --name=${video}.i420 --width=1344 --height=376"
+
+    proxy-camera:
+       image: chalmersrevere/opendlv-device-camera-v4l-multi:v0.0.8
+       network_mode: host
+       group_add:
+           - video
+       ipc: host
+       user: root
+       devices:
+           - "/dev/${video}:/dev/${video}"
+       environment:
+           - DISPLAY=$DISPLAY
+       volumes:
+           - /tmp/.X11-unix:/tmp/.X11-unix
+           - /tmp:/tmp
+       command: "--camera=/dev/${video} --width=1344 --height=376 --freq=100"
+
+
+    recorder:
+       image: chrberger/cluon-amd64:latest
+       network_mode: "host"
+       volumes:
+       - ./recordings${CID}cluon:/opt/recordings
+       working_dir: "/opt/recordings"
+       command: sh -c "cluon-OD4toStdout --cid=${CID} > `date +CID-${CID}-${missionname}-recording-%Y-%m-%d_%H%M%S.rec`"
+
+    formula_perception:
+        #build:
+        #    context: .
+        #    dockerfile: Dockerfile.amd64
+        image: yolo-perception_formula_perception:latest
+        runtime: nvidia
+        volumes:
+        # change the network_path in .env folder
+          - ${network_path}:/usr/network_files/
+        network_mode: "host"
+        privileged: true
+        command: "lynx_perception --cid=130 --net_names_file=/usr/network_files/formula.names --net_cfg_file=/usr/network_files/formula.cfg --net_weights_file=/usr/network_files/formula_final.weights --verbose"
+
+volumes:
+    network_folder:
+    # driver: local  # is already local by default
