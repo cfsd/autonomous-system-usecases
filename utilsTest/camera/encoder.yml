@@ -1,0 +1,16 @@
+# it includes ZED camera, data recording, perception microservices
+version: '2.3'
+
+services: 
+    video-h264-encoder-amd64:
+        #build:
+            #context: https://github.com/chalmers-revere/opendlv-video-h264-encoder.git
+            #dockerfile: Dockerfile.amd64
+        image: video-h264-encoder-amd64:latest
+        restart: on-failure
+        network_mode: "host"
+        ipc: "host"
+        volumes:
+        - /tmp:/tmp
+        command: "--cid=${CID} --name=${video}.i420 --width=1344 --height=376 --verbose"
+
