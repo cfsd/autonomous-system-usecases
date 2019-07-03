@@ -16,3 +16,10 @@ services:
        - ./recordings${CID}cluon:/opt/recordings
        working_dir: "/opt/recordings"
        command: sh -c "cluon-OD4toStdout --cid=${CID} > `date +CID-${CID}-${missionname}-recording-%Y-%m-%d_%H%M%S.rec`"
+   
+    proxy-imu:
+        image: chalmersfsd/cfsd-proxy-imu:v1.0.0
+        network_mode: "host"
+        devices:
+            - "/dev/ttyUSB0:/dev/ttyUSB0"
+        command: "opendlv-proxy-ellipse2n --cid=${CID} --id=112"
