@@ -34,6 +34,6 @@ services:
 
 
     cfsd-mission-control:
-        image: chalmersfsd/cfsd-logic-lynx-mission-control:test16
+        image: chalmersfsd/cfsd-logic-lynx-mission-control:test17
         network_mode: "host"
         command: " --cid=${CID} --frequency=60 --inspectionTorqueReq=120 --braketestVelocityReq=12 --steeringReq=20 --missionTime=30"
