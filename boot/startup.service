@@ -1,8 +1,9 @@
 [Unit]
 Description=CFSD Start script
-
+Wants=socketcan-setup.service
+After=network-online.target
 [Service]
 ExecStart=/home/cfsd/boot/startup.sh
 
 [Install]
-WantedBy=multi-user.target 
+WantedBy=multi-user.target
