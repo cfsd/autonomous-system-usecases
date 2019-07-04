@@ -30,7 +30,7 @@ services:
     cfsd-logic-lynx-steering:
         image: chalmersfsd/cfsd19-logic-lynx-steering:test-new-cape3
         network_mode: "host"
-        command: "steering --cid=${CID} --cidGpio=${CID} --cidpwm=${CID} --cidAnalog=${CID} --id=1 --freq=15 --pconst=2300 --iconst=5.5 --tolerance=1 --deadzoneError=3.7 --acceptableError=1 --deadzoneDuty=18000"
+        command: "steering --port=8884 --cid=${CID} --cidGpio=${CID} --cidpwm=${CID} --cidAnalog=${CID} --id=1 --freq=15 --pconst=2300 --iconst=5.5 --tolerance=1 --deadzoneError=3.7 --acceptableError=1 --deadzoneDuty=18000"
 
 
     cfsd-mission-control:
@@ -40,5 +40,5 @@ services:
 
     cfsd-speed-estimation:
         image: chalmersfsd/cfsd-speed-estimation:v0.0.2
-        netork_mode: "host"
+        network_mode: "host"
         command: "cfsd-speed-estimation --cid=${CID} --freq=50"
