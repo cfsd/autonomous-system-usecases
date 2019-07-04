@@ -5,8 +5,8 @@ services:
         image: chalmersfsd/opendlv-device-stm32-lynx:test-jitter-fixed10
         network_mode: "host"
         devices:
-            - "${USBdevice}:${USBdevice}"
-        command: "opendlv-device-stm32-lynx --cid=${CID} --cidGpio=${CID} --cidpwm=${CID} --freq=30 -id=1 --device=${USBdevice} "
+            - "/dev/ttyACM0:/dev/ttyACM0"
+        command: "opendlv-device-stm32-lynx --cid=${CID} --cidGpio=${CID} --cidpwm=${CID} --freq=30 -id=1 --device=/dev/ttyACM0 "
 #--rackPos --steerPos --ebsLine --ebsAct --servTank --pressReg --asms --clamped --ebsOK
 
     #can-service
@@ -37,3 +37,8 @@ services:
         image: chalmersfsd/cfsd-logic-lynx-mission-control:test16
         network_mode: "host"
         command: " --cid=${CID} --frequency=60 --inspectionTorqueReq=120 --braketestVelocityReq=12 --steeringReq=20"
+
+    cfsd-speed-estimation:
+        image: chalmersfsd/cfsd-speed-estimation:v0.0.2
+        netork_mode: "host"
+        command: "cfsd-speed-estimation --cid=${CID} --freq=50"
