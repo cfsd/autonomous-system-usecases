@@ -9,4 +9,4 @@ services:
        volumes:
        - ./recordings${CID}cluon:/opt/recordings
        working_dir: "/opt/recordings"
-       command: sh -c "cluon-OD4toStdout --cid=${CID} > `date +CID-${CID}-${missionname}-recording-%Y-%m-%d_%H%M%S.rec`"
+       command: sh -c "cluon-OD4toStdout --cid=${CID} > `date +CID-${CID}-${missionName}-recording-%Y-%m-%d_%H%M%S.rec`"
