@@ -5,7 +5,7 @@ version: '2'
 services: 
     
     cfsd-cognition-acceleration:
-        image: chalmersfsd/cfsd-action-longitudinal-control:test-piControl9
+        image: chalmersfsd/cfsd-action-longitudinal-control:v0.0.2
         network_mode: "host"
         command: "motion --cid=${CID} --freq=2"
 
