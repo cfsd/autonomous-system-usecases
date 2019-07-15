@@ -1,0 +1,60 @@
+# This is a basic .yml file for CFSD19
+# it includes ZED camera and ellipse2n interface, data recording microservices
+version: '2'
+
+services: 
+    
+    recorder:
+       image: chrberger/cluon-amd64:latest
+       network_mode: "host"
+       volumes:
+       - ./recordings${CID}cluon:/opt/recordings
+       working_dir: "/opt/recordings"
+       command: sh -c "cluon-OD4toStdout --cid=${CID} > `date +CID-${CID}-${missionName}-recording-%Y-%m-%d_%H%M%S.rec`"
+   
+    cfsd-cognition-acceleration:
+        image: chalmersfsd/cfsd-action-longitudinal-control:v0.0.2
+        network_mode: "host"
+        command: "motion --cid=${CID} --freq=2"
+
+    cfsd-proxy-imu:
+        image: chalmersfsd/cfsd-proxy-imu:v1.0.1
+        network_mode: "host"
+        devices:
+            - "/dev/ttyUSB0:/dev/ttyUSB0"
+        command: "opendlv-proxy-ellipse2n --cid=${CID} --id=112"
+
+    opendlv-device-camera-zed:
+        image: chalmersrevere/opendlv-device-camera-zed-amd64:v0.0.1
+        network_mode: "host"
+        ipc: host
+        privileged: true
+        environment:
+        - DISPLAY=$DISPLAY
+        volumes:
+        - /tmp:/tmp
+        command: "opendlv-device-camera-zed --profile=1280x720@60 --verbose"
+
+    cfsd-perception-yolo:
+        image: chalmersrevere/opendlv-perception-detect-yolo-amd64:v0.0.1
+        network_mode: "host"
+        ipc: host
+        privileged: true
+        environment:
+        - DISPLAY=$DISPLAY
+        volumes:
+        - /tmp:/tmp
+        - ${PWD}/formula.cfg:/opt/yolo.cfg
+        - ${PWD}/formula.weights:/opt/yolo.weights
+        command: "opendlv-perception-detect-yolo --cid=${CID} --cfg-file=/opt/yolo.cfg --weight-file=/opt/yolo.weights --width=1280 --height=720 --verbose"
+
+    cfsd-logic-pathplanner:
+        image: chalmersfsd/cfsd-logic-pathplanner:test6
+        network_mode: "host"
+        command: "cfsd-logic-pathplanner --cid=${CID} --freq=30 --verbose"
+
+    cfsd-logic-aimpoint:
+        image: chalmersfsd/cfsd-logic-aimpoint:test-single-aimpoint15
+        network_mode: "host"
+        command: "cfsd-logic-aimpoint --cid=${CID} --previewTime=0.5 --lowPassFactor=0.95"
+
