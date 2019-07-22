@@ -1,0 +1,45 @@
+version: '2'
+
+services: 
+    stm32-lynx:
+        image: chalmersfsd/opendlv-device-stm32-lynx:test-jitter-fixed10
+        network_mode: "host"
+        devices:
+            - "/dev/ttyACM0:/dev/ttyACM0"
+        command: "opendlv-device-stm32-lynx --cid=${CID} --cidGpio=${CID} --cidpwm=${CID} --freq=30 -id=1 --device=/dev/ttyACM0" 
+#"--rackPos --steerPos --ebsLine --ebsAct --servTank --pressReg --asms --clamped --ebsOK"
+
+    #can-service
+    cangw-lynx:
+        image: chalmersfsd/cfsd-proxy-cangw-lynx:testgard
+        network_mode: "host"
+        command: "cfsd-proxy-cangw-lynx --cid=${CID} --can=can0"
+
+    cangw-res:
+        image: chalmersfsd/cfsd-proxy-cangw-res:v1.0.0
+        network_mode: "host"
+        command: "opendlv-device-cangw-lynx --cid=${CID} --can=can1"
+
+    state-machine:
+        image: chalmersfsd/cfsd-logic-lynx-state-machine:v0.0.1
+        network_mode: "host"
+        depends_on:
+         - cangw-res
+        command: "state-machine --cid=${CID} --cidAnalog=${CID} --cidGpio=${CID} --cidPwm=${CID} --freq=30.0f --verbose"
+
+    cfsd-logic-lynx-steering:
+        image: chalmersfsd/cfsd19-logic-lynx-steering:test-new-cape3
+        network_mode: "host"
+        command: "steering --port=8884 --cid=${CID} --cidGpio=${CID} --cidpwm=${CID} --cidAnalog=${CID} --id=1 --freq=15 --pconst=2000 --iconst=3.5 --tolerance=1 --deadzoneError=3.7 --acceptableError=1 --deadzoneDuty=5000"
+#--pconst=2300 --iconst=5.5 --tolerance=1 --deadzoneError=3.7 --acceptableError=1 --deadzoneDuty=18000"
+
+
+    cfsd-mission-control:
+        image: chalmersfsd/cfsd-logic-lynx-mission-control:testConstTorque
+        network_mode: "host"
+        command: " --cid=${CID} --frequency=60 --braketestVelocityReq=4 --steeringReq=20 --missionTime=30"
+
+    cfsd-speed-estimation:
+        image: chalmersfsd/cfsd-speed-estimation:v0.0.2
+        network_mode: "host"
+        command: "cfsd-speed-estimation --cid=${CID} --freq=50"
