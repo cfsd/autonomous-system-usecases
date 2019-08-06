@@ -1,0 +1,71 @@
+version: '2.3'
+
+services: 
+    stm32-lynx:
+        image: chalmersfsd/opendlv-device-stm32-lynx:production2
+        network_mode: "host"
+        devices:
+            - "/dev/ttyACM0:/dev/ttyACM0"
+        command: "opendlv-device-stm32-lynx --cid=${CID} --cidGpio=${CID} --cidpwm=${CID} --freq=30 -id=1 --device=/dev/ttyACM0" 
+#"--rackPos --steerPos --ebsLine --ebsAct --servTank --pressReg --asms --clamped --ebsOK"
+
+    #can-service
+    cangw-lynx:
+        image: chalmersfsd/cfsd-proxy-cangw-lynx:testPEoutput24
+        network_mode: "host"
+        command: "cfsd-proxy-cangw-lynx --cid=${CID} --can=can0"
+
+    cangw-res:
+        image: chalmersfsd/cfsd-proxy-cangw-res:v1.0.0
+        network_mode: "host"
+        command: "opendlv-device-cangw-lynx --cid=${CID} --can=can1"
+
+    state-machine:
+        image: chalmersfsd/cfsd-logic-lynx-state-machine:test-logging37
+        network_mode: "host"
+        depends_on:
+         - cangw-res
+        volumes:
+         - /home/cfsd/script/logs:/opt
+        command: "state-machine --cid=${CID} --cidAnalog=${CID} --cidGpio=${CID} --cidPwm=${CID} --freq=30.0f --verbose"
+
+    cfsd-logic-lynx-steering:
+        image: chalmersfsd/cfsd19-logic-lynx-steering:test-limit-request4
+        network_mode: "host"
+        command: "steering --port=8884 --cid=${CID} --cidGpio=${CID} --cidpwm=${CID} --cidAnalog=${CID} --id=1 --freq=15 --pconst=1500 --iconst=2 --tolerance=1 --deadzoneError=3.7 --acceptableError=1 --deadzoneDuty=5000"
+#--pconst=2300 --iconst=5.5 --tolerance=1 --deadzoneError=3.7 --acceptableError=1 --deadzoneDuty=18000"
+
+
+    cfsd-mission-control:
+        image: chalmersfsd/cfsd-logic-lynx-mission-control:test-trackdrive-gps22
+        network_mode: "host"
+        command: " --cid=${CID} --frequency=60 --braketestVelocityReq=2 --steeringReq=-15 --missionTime=30"
+
+    cfsd-speed-estimation:
+        image: chalmersfsd/cfsd-speed-estimation:v0.0.2
+        network_mode: "host"
+        command: "cfsd-speed-estimation --cid=${CID} --freq=50"
+
+#    opendlv-device-camera-zed:
+#        image: chalmersfsd/cfsd-opendlv-device-camera-zed-amd64:v0.0.1
+#        network_mode: "host"
+#        ipc: host
+#        privileged: true
+#        restart: always
+#        runtime: nvidia
+#        environment:
+#        - DISPLAY=$DISPLAY
+#        volumes:
+#        - /tmp:/tmp
+#        - ${PWD}/camera_config:/usr/local/zed/settings/
+#        command: "opendlv-device-camera-zed --profile=1280x720@30"
+
+    ui-object-amd64:
+        #build:
+            #context: https://github.com/chalmers-revere/opendlv-ui-object.git
+            #dockerfile: Dockerfile.amd64
+        image: chalmersrevere/opendlv-ui-object:v0.0.1
+        network_mode: "host"
+        command: "opendlv-ui-object --cid=${CID} --port=8000 --http-root=/srv/http"
+
+

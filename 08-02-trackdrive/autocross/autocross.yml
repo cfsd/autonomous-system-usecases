@@ -1,0 +1,19 @@
+# This is a basic .yml file for CFSD19
+# it includes ZED camera and ellipse2n interface, data recording microservices
+version: '2.3'
+
+services: 
+    
+    recorder:
+       image: chrberger/cluon-amd64:latest
+       network_mode: "host"
+       volumes:
+       - ./recordings${CID}cluon:/opt/recordings
+       working_dir: "/opt/recordings"
+       command: sh -c "cluon-OD4toStdout --cid=${CID} > `date +CID-${CID}-${missionName}-recording-%Y-%m-%d_%H%M%S.rec`"
+   
+    cfsd-cognition-acceleration:
+       image: chalmersfsd/cfsd-action-longitudinal-control:test-piControl16
+       network_mode: "host"
+       command: "motion --cid=${CID} --freq=50 --accKp=60 --accKi=25 --torqueLimit=2400 --accILimit=4 --torqueRateLimit=100"
+
