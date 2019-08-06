@@ -1,0 +1,20 @@
+# This is a basic .yml file for CFSD19
+# it includes ZED camera and ellipse2n interface, data recording microservices
+version: '2.3'
+
+services: 
+    
+    video-h264-recorder-amd64:
+        #build:
+            #context: https://github.com/chalmers-revere/opendlv-video-h264-recorder.git
+            #dockerfile: Dockerfile.amd64    
+        image: video-h264-recorder-amd64:latest
+        restart: on-failure
+        network_mode: "host"
+        ipc: "host"
+        working_dir: /data
+        volumes:
+        - /tmp:/tmp
+        - ${PWD}:/data
+        command: "--cid=${CID} --name=video0.i420 --width=1280 --height=720 --recsuffix=-video+envelopes --verbose"
+

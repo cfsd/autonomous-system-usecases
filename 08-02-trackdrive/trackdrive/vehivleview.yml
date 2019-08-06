@@ -1,0 +1,17 @@
+version: '2'
+
+services:
+    opendlv-vehicle-view-amd64:
+        container_name: opendlv-vehicle-view
+        image: chalmersrevere/opendlv-vehicle-view-multi:v0.0.60
+        restart: on-failure
+        network_mode: host
+        volumes:
+        - ${PWD}/recordings130cluon:/opt/vehicle-view/recordings
+#        - ${PWD}:/opt/vehicle-view/recordings
+        - /var/run/docker.sock:/var/run/docker.sock
+        environment:
+        - OD4SESSION_CID=111
+        - PLAYBACK_OD4SESSION_CID=130
+        ports:
+        - "8081:8081"

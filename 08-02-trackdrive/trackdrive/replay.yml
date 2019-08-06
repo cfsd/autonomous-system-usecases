@@ -1,0 +1,60 @@
+# Copyright (C) 2018  Christian Berger
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+version: '2.3' # Must be present exactly once at the beginning of the docker-compose.yml file
+
+services:    # Must be present exactly once at the beginning of the docker-compose.yml file
+    video-h264-decoder-amd64:
+        #build:
+        #    context: https://github.com/chalmers-revere/opendlv-video-h264-decoder.git
+        #    dockerfile: Dockerfile.amd64
+        image: video-h264-decoder-amd64:latest
+        restart: on-failure
+        network_mode: "host"
+        ipc: "host"
+        volumes:
+        - /tmp:/tmp
+        environment:
+        - DISPLAY=${DISPLAY}
+        command: "--cid=130 --name=video0.argb"
+
+    opendlv-perception-detect-yolo:
+        image: chalmersrevere/opendlv-perception-detect-yolo-amd64:v0.0.1
+        network_mode: "host"
+        ipc: host
+        privileged: true
+        runtime: nvidia
+        restart: always
+        environment:
+        - DISPLAY=$DISPLAY
+        depends_on:
+        - video-h264-decoder-amd64
+        volumes:
+        - /tmp:/tmp
+        - ${NETWORK}/formula.cfg:/opt/yolo.cfg
+        - ${NETWORK}/formula_final.weights:/opt/yolo.weights
+        command: "opendlv-perception-detect-yolo --cid=${CID} --id=0 --cfg-file=/opt/yolo.cfg --weight-file=/opt/yolo.weights --width=1280 --height=720 --verbose"
+
+    cfsd-logic-pathplanner:
+        image: chalmersfsd/cfsd-logic-pathplanner:test8
+        network_mode: "host"
+        environment:
+        - DISPLAY=$DISPLAY
+        command: "cfsd-logic-pathplanner --cid=${CID} --freq=30 --debug"
+
+    cfsd-logic-aimpoint:
+        image: chalmersfsd/cfsd-logic-aimpoint:test-single-aimpoint15
+        network_mode: "host"
+        command: "cfsd-logic-aimpoint --cid=${CID} --previewTime=0.5 --lowPassFactor=0.95 --minDistance=0.4 --verbose"

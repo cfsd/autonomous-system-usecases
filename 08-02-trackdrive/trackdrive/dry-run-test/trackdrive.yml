@@ -1,0 +1,92 @@
+# This is a basic .yml file for CFSD19
+# it includes ZED camera and ellipse2n interface, data recording microservices
+version: '2.3'
+
+services: 
+    
+    recorder:
+       image: chrberger/cluon-amd64:latest
+       network_mode: "host"
+       volumes:
+       - ./recordings${CID}cluon:/opt/recordings
+       working_dir: "/opt/recordings"
+       command: sh -c "cluon-OD4toStdout --cid=${CID} > `date +CID-${CID}-${missionName}-recording-%Y-%m-%d_%H%M%S.rec`"
+   
+    video-h264-recorder-amd64:
+        #build:
+            #context: https://github.com/chalmers-revere/opendlv-video-h264-recorder.git
+            #dockerfile: Dockerfile.amd64    
+        image: video-h264-recorder-amd64:latest
+        restart: on-failure
+        network_mode: "host"
+        ipc: "host"
+        depends_on:
+        - opendlv-device-camera-zed
+        working_dir: /data
+        volumes:
+        - /tmp:/tmp
+        - ${PWD}:/data
+        command: "--cid=${CID} --name=video0.i420 --width=1280 --height=720 --recsuffix=-video+envelopes "
+
+    cfsd-cognition-acceleration:
+        image: chalmersfsd/cfsd-action-longitudinal-control:test-piControl16
+        network_mode: "host"
+        command: "motion --cid=${CID} --freq=50 --accKp=60 --accKi=25 --torqueLimit=2400 --accILimit=4 --torqueRateLimit=100"
+
+    cfsd-proxy-imu:
+        image: chalmersfsd/cfsd-proxy-imu:v1.0.1
+        network_mode: "host"
+        devices:
+            - "/dev/ttyUSB0:/dev/ttyUSB0"
+        command: "opendlv-proxy-ellipse2n --cid=${CID} --id=112"
+
+    opendlv-device-camera-zed:
+#        image: chalmersrevere/opendlv-device-camera-zed-amd64:v0.0.1
+        image: chalmersfsd/cfsd-opendlv-device-camera-zed-amd64:v0.0.1
+        network_mode: "host"
+        ipc: host
+        privileged: true
+        runtime: nvidia
+        environment:
+        - DISPLAY=$DISPLAY
+        volumes:
+        - /tmp:/tmp
+        command: "opendlv-device-camera-zed --profile=1280x720@30"
+
+    opendlv-perception-detect-yolo:
+#        image: chalmersrevere/opendlv-perception-detect-yolo-amd64:v0.0.1
+        image: chalmersfsd/cfsd-opendlv-perception-detect-yolo-amd64:v0.0.1
+        network_mode: "host"
+        ipc: host
+        privileged: true
+        runtime: nvidia
+        restart: always
+        environment:
+        - DISPLAY=$DISPLAY
+        volumes:
+        - /tmp:/tmp
+        - ${NETWORK}/formula.cfg:/opt/yolo.cfg
+        - ${NETWORK}/formula_final.weights:/opt/yolo.weights
+#        - ${NETWORK_CUSTOM}/custom.cfg:/opt/yolo.cfg
+#        - ${NETWORK_CUSTOM}/custom.weights:/opt/yolo.weights
+        command: "opendlv-perception-detect-yolo --cid=${CID} --id=0 --cfg-file=/opt/yolo.cfg --weight-file=/opt/yolo.weights --width=1280 --height=720 --camera=0 --verbose"
+
+    cfsd-logic-pathplanner:
+        image: chalmersfsd/cfsd-logic-pathplanner:test9
+        network_mode: "host"
+        environment:
+        - DISPLAY=$DISPLAY
+        command: "cfsd-logic-pathplanner --cid=${CID} --m_guessDistance=3.2 --m_seperateDistance=1 --m_useGuessCones --m_useOneConeLine --freq=30 --debug"
+
+    cfsd-logic-aimpoint:
+        image: chalmersfsd/cfsd-logic-aimpoint:test-single-aimpoint15
+        network_mode: "host"
+        command: "cfsd-logic-aimpoint --cid=${CID} --previewTime=0 --lowPassFactor=0.95 --minDistance=1"
+
+    ui-object-amd64:
+        #build:
+            #context: https://github.com/chalmers-revere/opendlv-ui-object.git
+            #dockerfile: Dockerfile.amd64
+        image: chalmersrevere/opendlv-ui-object:v0.0.1 
+        network_mode: "host"
+        command: "opendlv-ui-object --cid=${CID} --port=8000 --http-root=/srv/http"
