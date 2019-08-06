@@ -1,0 +1,86 @@
+# This is a basic .yml file for CFSD19
+# it includes ZED camera and ellipse2n interface, data recording microservices
+version: '2.3'
+
+services: 
+    recorder:
+       image: chrberger/cluon-amd64:latest
+       network_mode: "host"
+       volumes:
+       - ${PWD}/recordings${CID}cluon:/opt/recordings
+       working_dir: "/opt/recordings"
+       command: sh -c "cluon-OD4toStdout --cid=${CID} > `date +CID-${CID}-${missionName}-recording-%Y-%m-%d_%H%M%S.rec`"
+   
+    video-h264-recorder-amd64:
+        #build:
+            #context: https://github.com/chalmers-revere/opendlv-video-h264-recorder.git
+            #dockerfile: Dockerfile.amd64    
+        image: video-h264-recorder-amd64:latest
+        restart: on-failure
+        network_mode: "host"
+        ipc: "host"
+        depends_on:
+        - opendlv-device-camera-zed
+        working_dir: /data
+        volumes:
+        - /tmp:/tmp
+        - ${PWD}:/data
+        command: "--cid=${CID} --name=video0.i420 --width=1280 --height=720 --recsuffix=-video+envelopes"
+
+    cfsd-longitudinal-control:
+        image: chalmersfsd/cfsd-action-longitudinal-control:test-piControl18
+        network_mode: "host"
+        command: "motion --cid=130 --freq=50 --accKp=100 --accKi=2 --torqueLimit=40 --accILimit=200 --verbose"
+        # command: "motion --cid=${CID} --freq=50 --accKp=100 --accKi=50 --torqueLimit=500 --accILimit=5 --torqueRateLimit=100"
+
+    cfsd-proxy-imu:
+        image: chalmersfsd/cfsd-proxy-imu:v1.0.1
+        network_mode: "host"
+        devices:
+            - "/dev/ttyUSB0:/dev/ttyUSB0"
+        command: "opendlv-proxy-ellipse2n --cid=${CID} --id=112"
+
+    opendlv-device-camera-zed:
+        image: chalmersfsd/cfsd-opendlv-device-camera-zed-amd64:v0.0.1
+        # image: chalmersrevere/opendlv-device-camera-zed-amd64:v0.0.1
+        network_mode: "host"
+        ipc: host
+        privileged: true
+        runtime: nvidia
+        environment:
+        - DISPLAY=$DISPLAY
+        - ${perceptionConfig}/camera_config:/usr/local/zed/settings/
+        volumes:
+        - /tmp:/tmp
+        command: "opendlv-device-camera-zed --profile=1280x720@30"
+
+    opendlv-perception-detect-yolo:
+        image: chalmersfsd/cfsd-opendlv-perception-detect-yolo-amd64:v0.0.1
+        # image: chalmersrevere/opendlv-perception-detect-yolo-amd64:v0.0.1
+        network_mode: "host"
+        ipc: host
+        privileged: true
+        runtime: nvidia
+        restart: always
+        environment:
+        - DISPLAY=$DISPLAY
+        volumes:
+        - /tmp:/tmp
+        - ${perceptionConfig}/network/formula.cfg:/opt/yolo.cfg
+        - ${perceptionConfig}/network/formula_final.weights:/opt/yolo.weights
+        # - ${perceptionConfig}/network_custom/custom.cfg:/opt/yolo.cfg
+        # - ${perceptionConfig}/network_custom/custom.weights:/opt/yolo.weights
+        command: "opendlv-perception-detect-yolo --cid=${CID} --id=0 --cfg-file=/opt/yolo.cfg --weight-file=/opt/yolo.weights --width=1280 --height=720"
+
+    cfsd-logic-pathplanner:
+        image: chalmersfsd/cfsd-logic-pathplanner:test10
+        network_mode: "host"
+        environment:
+        - DISPLAY=$DISPLAY
+        command: "cfsd-logic-pathplanner --cid=${CID} --freq=30 --verbose"
+
+    cfsd-logic-aimpoint:
+        image: chalmersfsd/cfsd-logic-aimpoint:test-single-aimpoint15
+        network_mode: "host"
+        command: "cfsd-logic-aimpoint --cid=${CID} --previewTime=0.5 --lowPassFactor=0.95 --minDistance=0.4 --verbose"
+
