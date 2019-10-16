@@ -1,0 +1,19 @@
+version: '2.3'
+
+services:
+    message-controller:
+        build:
+            context: https://github.com/chalmersfsd/cfsd-message-controller.git#v0.0.5:js
+            dockerfile: Dockerfile.amd64
+        network_mode: "host"
+        command: " --cid=130"
+
+#    stm32-lynx:
+#        image: chalmersfsd/opendlv-device-stm32-lynx:test-jitter-fixed11
+#        network_mode: "host"
+#        devices:
+#            - "/dev/ttyACM0:/dev/ttyACM0"
+#        command: "opendlv-device-stm32-lynx --cid=130 --cidGpio=130 --cidpwm=130 --freq=30 -id=1 --device=/dev/ttyACM0"
+# These flags can be added in the command above to print values to terminal when running the STM proxy
+#"--rackPos --steerPos --ebsLine --ebsAct --servTank --pressReg --asms --clamped --ebsOK"
+
