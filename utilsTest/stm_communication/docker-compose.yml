@@ -1,3 +1,9 @@
+# These microservices are for sending messages to the STM over the 
+# USB connection
+# The STM have to be powered and connected to the computer before
+# starting these microservices
+# Enter "localhost:8082" in a  web browser to send messages
+
 version: '2.3'
 
 services:
